@@ -1,0 +1,10 @@
+client/Bombatlon/.vs/
+client/Bombatlon/Bombatlon/bin/
+client/Bombatlon/Bombatlon/obj/
+client/Bombatlon/packages/
+client/Bombatlon/publish/
+client/Bombatlon/Bombatlon/Microsoft.FlightSimulator.SimConnect.dll
+client/Bombatlon/Bombatlon/SimConnect.dll
+client/Bombatlon/Bombatlon/SimConnect.lib
+client_prototype/src/bombatlon/.idea/
+client_prototype/src/bombatlon/__pycache__/
