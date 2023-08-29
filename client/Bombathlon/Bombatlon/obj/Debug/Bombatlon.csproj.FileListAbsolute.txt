@@ -1,0 +1,3 @@
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\Debug\Bombatlon.csproj.AssemblyReference.cache
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\Debug\Bombatlon.csproj.SuggestedBindingRedirects.cache
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\Debug\Bombatlon.csproj.CoreCompileInputs.cache

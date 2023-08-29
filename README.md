@@ -1,11 +1,11 @@
-![Bombatlon Icon](./icon/Bombatlon_text.png)
+![Bombathlon Icon](./icon/Bombatlon_text.png)
 
-# MSFS-Bombatlon
+# MSFS-Bombathlon
 
 **MSFS Campaign Project for Manual Bombing Challenges**
 
-Welcome to **msfs-bombatlon**, a project focused on integrating manual bombing challenges into Microsoft Flight Simulator (MSFS). 
-Drawing inspiration from biathlon, Bombatlon introduces a series of engaging missions where players can participate in bombing runs to destroy scattered targets across the global landscape. 
+Welcome to **msfs-Bombathlon**, a project focused on integrating manual bombing challenges into Microsoft Flight Simulator (MSFS). 
+Drawing inspiration from biathlon, Bombathlon introduces a series of engaging missions where players can participate in bombing runs to destroy scattered targets across the global landscape. 
 Successfully completing these challenges rewards players with access to new aircraft and equipment.
 
 ## Purpose and Motivation
@@ -17,15 +17,15 @@ While civil aviation remains the primary focus, the inclusion of military aircra
 Despite the increasing availability of combat planes in MSFS, users often find themselves lacking substantial objectives beyond airshows, intercepts, and scenic flights. 
 Although tools like NeoFly offer intercept missions, they lack a comprehensive framework for military career progression within the global context of MSFS.  
 
-This is where Bombatlon and its successors come into play. These tools aim to provide purposeful combat-oriented missions, effectively utilizing the available military aircraft. 
-Bombatlon's primary objective is to deliver manual bombing challenges spread across the MSFS world map, allowing players to demonstrate their piloting and bombing skills. 
+This is where Bombathlon and its successors come into play. These tools aim to provide purposeful combat-oriented missions, effectively utilizing the available military aircraft. 
+Bombathlon's primary objective is to deliver manual bombing challenges spread across the MSFS world map, allowing players to demonstrate their piloting and bombing skills. 
 This initiative serves as a foundation for potential future developments, including a full-fledged capture-and-hold combat environment for conquering the globe of MSFS.
 
 ### Project Scope
 
-Bombatlon and its successors do not aim to replicate the complexity of dedicated combat simulations like DCS. 
+Bombathlon and its successors do not aim to replicate the complexity of dedicated combat simulations like DCS. 
 Instead, they emphasize accessible and engaging combat experiences, resembling sports competitions more than realistic battlefield scenarios.
-While Bombatlon incorporates elements of combat simulation, it intentionally maintains a simplified approach concerning system depth, physics simulation, and targeting systems. 
+While Bombathlon incorporates elements of combat simulation, it intentionally maintains a simplified approach concerning system depth, physics simulation, and targeting systems. 
 
 ## Description
 
@@ -69,7 +69,7 @@ As a last additional step Targets might get protected by Air defense. This is mo
 
 ### Architecture
 
-Bombatlon will consist of the core components:
+Bombathlon will consist of the core components:
 - MSFS Client
 - Backend Server
 - Database
@@ -124,7 +124,7 @@ Web App?
 - Flight Plan export (optional)
 
 
-## Successor "Bombatlon Conquest"
+## Successor "Bombathlon Conquest"
 
 This project is a technical prototype for a way bigger idea for a capture and hold combat environment.
 Players join a squadron and start a home Airport.
@@ -133,6 +133,7 @@ Troops, resources and planes can be transported to other airfields to capture th
 The maximum size of airfields depends on the size of the squadron to encourage cooperation.
 Players can destroy enemy defenses or facilities holding resources to weaken the enemy and enable conquering an enemy airfield.
 Players can engage planes in BVR air-to-air combat to defend their territory.
+Systems like Radar, RWR, Weapons Page or HUD (for CCIP) should be displayed as toolbar item if possible.
 
 ### Features
 - Squadron Management
@@ -163,7 +164,7 @@ More Information follows in separate project.
 
 ## Community
 
-If you are interested in the progress of this project join the discord: [Bombatlon Discord](https://discord.gg/Q8cQ5nhC)
+If you are interested in the progress of this project join the discord: [Bombathlon Discord](https://discord.gg/Q8cQ5nhC)
 
 
 

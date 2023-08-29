@@ -1,0 +1,9 @@
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\bin\x86\Debug\Bombatlon.exe.config
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\bin\x86\Debug\Bombatlon.exe
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\bin\x86\Debug\Bombatlon.pdb
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\bin\x86\Debug\Microsoft.FlightSimulator.SimConnect.dll
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\x86\Debug\Bombatlon.csproj.SuggestedBindingRedirects.cache
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\x86\Debug\Bombatlon.csproj.CoreCompileInputs.cache
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\x86\Debug\Bombatlon.csproj.CopyComplete
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\x86\Debug\Bombatlon.exe
+C:\Users\Cedric\Documents\git\Bombatlon\Bombatlon\obj\x86\Debug\Bombatlon.pdb
