@@ -78,6 +78,7 @@ Bombathlon will consist of the core components:
 #### MSFS Client
 
 C# Application using SimConnect
+Connected to Server via http rest, websocket or MQTT
 
 collects and pushes MSFS aircraft data
 - position
@@ -102,7 +103,20 @@ creates Targets
 #### Database
 
 Database?
-
+- Cockroach DB? 
+  Request Units 50 Million
+  Storage 10 GB
+- MongoDB
+  512MB to 5GB of storage
+  Shared RAM
+- InfluxDB
+  30 Tage
+  Only for temporal Data
+  - flights
+  - stats
+  - drops
+  - scores
+  
 stores:
 - Users
 - Squadrons
@@ -114,6 +128,8 @@ stores:
 
 
 ##### Web Interface
+
+React? ViewJS? Electron? 
 
 Web App?
 - login (Basic?, Token?)
