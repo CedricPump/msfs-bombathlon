@@ -97,7 +97,7 @@ Python application with REST API?
 monitors flight data
 calculates bomb launch, impact and damage
 manages squadrons
-anti chat detection (experimental)
+anti cheat detection (experimental)
 creates Targets
 
 #### Database
