@@ -8,3 +8,6 @@ client/Bombatlon/Bombatlon/SimConnect.dll
 client/Bombatlon/Bombatlon/SimConnect.lib
 client_prototype/src/bombatlon/.idea/
 client_prototype/src/bombatlon/__pycache__/
+backend/dist/
+backend/node_modules/
+backend/.idea/

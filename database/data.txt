@@ -1,0 +1,3 @@
+host: bombathlon-7822.7tc.cockroachlabs.cloud
+database: bombathlon
+user: bombathlon_backend
