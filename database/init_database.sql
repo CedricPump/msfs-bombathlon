@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) DEFAULT '',
+    email VARCHAR(255) UNIQUE NOT NULL,
     currentAirport VARCHAR(255) DEFAULT '',
     password_hash VARCHAR(255) NOT NULL,
     password_salt VARCHAR(255) NOT NULL
