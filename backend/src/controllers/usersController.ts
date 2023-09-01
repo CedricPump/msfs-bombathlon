@@ -5,8 +5,12 @@ import { User } from '../models/User';
 import { CockroachDbService } from '../services/dbService';
 import { AuthService } from  '../services/authServices';
 import {QueryResult} from "pg";
+import NodeCache from "node-cache";
+
+const userCache = new NodeCache({ stdTTL: 30 * 60 }); // 39 min
 
 export class UsersController {
+
     private static db: CockroachDbService = CockroachDbService.getInstance()
 
     static getAllUsers(req: Request, res: Response) {
@@ -48,6 +52,7 @@ export class UsersController {
                 return res.status(500).json({ message: 'Failed to generate token' });
             }
 
+            console.log("return tokens")
             return res.status(200).json({ "accessToken": tokens.accessToken, "refreshToken": tokens.refreshToken });
         } catch (error) {
             if(error instanceof UserNotFoundException) {
@@ -81,8 +86,42 @@ export class UsersController {
     }
 
 
+    static getUserById(id: string): Promise<User> {
+        const cachedUser = userCache.get(id);
+        if (cachedUser) {
+            return Promise.resolve(cachedUser as User);
+        }
+
+        return UsersController.db.query("SELECT * FROM users WHERE id = $1;", [id]).then((result: QueryResult) => {
+            const users: User[] = result.rows.map(row => new User(
+                row.id,
+                row.username,
+                row.email,
+                row.currentairport,
+                row.password_hash,
+                row.password_salt
+            ));
+            if(users.length == 0 ) {
+                throw new Error("User not found")
+            }
+
+            const user = users[0];
+            if (user) {
+                userCache.set(user.id, user); // Cache the user data
+            }
+
+            return user;
+        }).catch(error => {
+            throw error; // Rethrow the error for further handling
+        });
+    }
 
     static getUserByUsername(username: string): Promise<User> {
+        const cachedUser = userCache.get(username);
+        if (cachedUser) {
+            return Promise.resolve(cachedUser as User);
+        }
+
         return UsersController.db.query("SELECT * FROM users WHERE username = $1;", [username]).then((result: QueryResult) => {
             const users: User[] = result.rows.map(row => new User(
                 row.id,
@@ -95,13 +134,24 @@ export class UsersController {
             if(users.length == 0 ) {
                 throw new Error("User not found")
             }
-            return users[0]
+
+            const user = users[0];
+            if (user) {
+                userCache.set(user.id, user); // Cache the user data
+            }
+
+            return user;
         }).catch(error => {
             throw error; // Rethrow the error for further handling
         });
     }
 
     static getUserByEmail(email: string): Promise<User> {
+        const cachedUser = userCache.get(email);
+        if (cachedUser) {
+            return Promise.resolve(cachedUser as User);
+        }
+
         return UsersController.db.query("SELECT * FROM users WHERE email = $1;", [email]).then((result: QueryResult) => {
             const users: User[] = result.rows.map(row => new User(
                 row.id,
@@ -114,7 +164,13 @@ export class UsersController {
             if(users.length == 0 ) {
                 throw new UserNotFoundException()
             }
-            return users[0]
+
+            const user = users[0];
+            if (user) {
+                userCache.set(user.id, user); // Cache the user data
+            }
+
+            return user;
         }).catch(error => {
             throw error; // Rethrow the error for further handling
         });
@@ -122,9 +178,16 @@ export class UsersController {
 
 
     static async checkSession(req: Request, res: Response) {
-        var userId = await AuthService.verifyAccessToken(req.body.token);
+        const authHeader = req.headers['authorization'];
+        var accessTokenCookie = undefined
+        if(req.cookies != undefined) {
+            accessTokenCookie = req.cookies['access_token']; // Assuming you use cookies for access tokens
+        }
+
+        const token = authHeader?.split(' ')[1] || accessTokenCookie;
+        var userId = await AuthService.verifyAccessToken(token);
         if(userId != null)
-            res.status(200).json({"message": "valid"})
+            res.status(200).json({"message": "valid", "data": {"userId": userId}})
         else
             res.status(401).json({"message": "unauthorized"})
     }

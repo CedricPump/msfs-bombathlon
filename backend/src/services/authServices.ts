@@ -67,15 +67,18 @@ class AuthService {
 
     static async authMiddleware(req: Request, res: Response, next: NextFunction) {
         // Define an array of paths that should skip authentication
-        const excludedPaths = ['/login', '/refreshtoken'];
-
+        const excludedPaths = ['/users/login', '/users/refreshtoken', '/users/register'];
+        console.log(req.path)
         // Check if the current path is in the excludedPaths array
         if (excludedPaths.includes(req.path)) {
             return next(); // Skip authentication
         }
 
         const authHeader = req.headers['authorization'];
-        const accessTokenCookie = req.cookies['access_token']; // Assuming you use cookies for access tokens
+        var accessTokenCookie = undefined
+        if(req.cookies != undefined) {
+            accessTokenCookie = req.cookies['access_token']; // Assuming you use cookies for access tokens
+        }
 
         const token = authHeader?.split(' ')[1] || accessTokenCookie;
 
@@ -83,7 +86,7 @@ class AuthService {
             return res.status(401).json({ message: 'Access token not provided.' });
         }
 
-        var userId = await this.verifyAccessToken(token);
+        var userId = await AuthService.verifyAccessToken(token);
         if(userId == null)
             return res.status(403).json({ message: 'Invalid token.' });
 

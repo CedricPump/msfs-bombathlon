@@ -7,10 +7,8 @@ import {User} from "../models/User";
 
 const router = express.Router();
 
-// Define your routes using the imported controllers
 router.get('/', UsersController.getAllUsers);
-router.post('/', UsersController.createUser);
-// Add other user-related routes
+router.post('/register', UsersController.createUser);
 
 // login
 router.post('/login', UsersController.login);
