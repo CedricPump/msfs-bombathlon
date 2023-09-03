@@ -18,7 +18,7 @@ class ApiService {
         };
 
         try {
-            const response = await axios.post(`${this.API_URL}/users/register`, body, {
+            const response = await axios.post(`${this.API_URL}/user/register`, body, {
                 headers: {
                     Authorization: `Bearer ${authService.getAccessToken()}`, // Include the access token in the request headers
                 },
@@ -37,7 +37,7 @@ class ApiService {
 
     public async getCurrentUser(): Promise<User | null> {
         try {
-            const response = await axios.get(`${this.API_URL}/users/current-user`, {
+            const response = await axios.get(`${this.API_URL}/user/current-user`, {
                 headers: {
                     Authorization: `Bearer ${authService.getAccessToken()}`, // Include the access token in the request headers
                 },

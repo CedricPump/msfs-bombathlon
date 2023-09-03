@@ -7,6 +7,12 @@ import cors from 'cors';
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+interface CustomRequest extends Request {
+    user?: {
+        userId: string;
+    };
+}
+
 // Middleware
 app.use(express.json());
 app.use(requestLogger); // Use the custom middleware

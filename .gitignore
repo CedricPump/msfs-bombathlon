@@ -11,3 +11,6 @@ client_prototype/src/bombatlon/__pycache__/
 backend/dist/
 backend/node_modules/
 backend/.idea/
+client/Bombathlon/Bombatlon/bin/
+client/Bombathlon/Bombatlon/obj/
+client/Bombathlon/.vs/Bombathlon/v17/.suo

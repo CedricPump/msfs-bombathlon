@@ -4,7 +4,7 @@
 class Flight {
     public currentPosition: Position|undefined = undefined;
     public lastPositions: Position[] = [];
-    constructor(public id: string, public userId: string, public plane: Plane) {
+    constructor(public userId: string, public plane: Plane) {
         // You can add more logic here if needed
     }
 }

@@ -2,6 +2,7 @@
 
 import { Request, Response } from 'express';
 import { Squadron } from '../models/Squadron';
+import {CustomRequest} from "./customRequest";
 
 const mockSquadrons: Squadron[] = [
     new Squadron('1', 'Red Falcons', "1"),
@@ -10,11 +11,11 @@ const mockSquadrons: Squadron[] = [
 ];
 
 export class SquadronsController {
-    static getAllSquadrons(req: Request, res: Response) {
+    static getAllSquadrons(req: CustomRequest, res: Response) {
         res.json(mockSquadrons);
     }
 
-    static createSquadron(req: Request, res: Response) {
+    static createSquadron(req: CustomRequest, res: Response) {
         const newSquadron = new Squadron(req.body.id, req.body.name, req.body.members);
         mockSquadrons.push(newSquadron);
         res.status(201).json(newSquadron);
@@ -22,3 +23,4 @@ export class SquadronsController {
 
     // Add other squadron-related controller functions
 }
+

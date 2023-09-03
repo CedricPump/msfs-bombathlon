@@ -7,7 +7,8 @@ export class User {
         public email: string,
         public currentAirport: string = "",
         public passwordHash: string,
-        public passwordSalt: string
+        public passwordSalt: string,
+        public squadron_id: string| undefined,
     ) {
         // You can add more logic here if needed
     }

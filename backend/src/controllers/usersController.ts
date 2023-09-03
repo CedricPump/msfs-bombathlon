@@ -4,38 +4,29 @@ import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { CockroachDbService } from '../services/dbService';
 import { AuthService } from  '../services/authServices';
-import {QueryResult} from "pg";
+import {UserNotFoundException, UserService} from '../services/userSerivce';
+import { QueryResult } from "pg";
 import NodeCache from "node-cache";
+import {Squadron} from "../models/Squadron";
+import {SquadronService} from "../services/squadronService";
+import {CustomRequest} from "./customRequest";
 
-const userCache = new NodeCache({ stdTTL: 30 * 60 }); // 39 min
+
 
 export class UsersController {
 
-    private static db: CockroachDbService = CockroachDbService.getInstance()
-
-    static getAllUsers(req: Request, res: Response) {
+    static getAllUsers(req: CustomRequest, res: Response) {
         console.log(`get all users`)
-        var result = UsersController.db.query("SELECT * FROM users").then((result: QueryResult) => {
-
-            const users: User[] = result.rows.map(row => new User(
-                row.id,
-                row.username,
-                row.email,
-                row.currentairport,
-                row.password_hash,
-                row.password_salt
-            ));
-            res.status(200).json(users)
-        })
+        res.status(200).json(UserService.getALlUsers())
     }
 
-    static async login(req: Request, res: Response) {
+    static async login(req: CustomRequest, res: Response) {
 
         const { email, password } = req.body;
         console.log(`login: ${email}`)
 
         try {
-            const user: User = await UsersController.getUserByEmail(email);
+            const user: User = await UserService.getUserByEmail(email);
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
@@ -53,7 +44,14 @@ export class UsersController {
             }
 
             console.log("return tokens")
-            return res.status(200).json({ "accessToken": tokens.accessToken, "refreshToken": tokens.refreshToken });
+            return res.status(200).json({
+                "userUUID": user.id,
+                "userName": user.username,
+                "accessToken": tokens.accessToken,
+                "refreshToken": tokens.refreshToken,
+                "accessTokenExpiration": tokens.accessTokenExpiration,
+                "refreshTokenExpiration": tokens.refreshTokenExpiration
+            });
         } catch (error) {
             if(error instanceof UserNotFoundException) {
                 return res.status(404).json({message: 'User not found'});
@@ -63,137 +61,49 @@ export class UsersController {
         }
     }
 
-    static async createUser(req: Request, res: Response) {
+
+    static async createUser(req: CustomRequest, res: Response) {
         console.log(`createUser: ${req.body.username}`);
-        var password_hash = await AuthService.hashPassword(req.body.password);
-
-        UsersController.db.query("INSERT INTO users (id, username, email, password_hash, password_salt) VALUES ( UUID_GENERATE_V4(), $1, $2, $3, $4);", [req.body.username, req.body.email, password_hash, ""])
-            .then((result: QueryResult) => {
-                // Successful insertion
-                res.status(201).json({"success": true});
-            })
-            .catch(error => {
-                if (error.code === '23505') { // PostgreSQL unique constraint violation error code
-                    console.error('Duplicate email address detected.');
-                    res.status(404).json({"message": "Email already in use"});
-                    // Handle the duplicate email address error
-                } else {
-                    console.error('Unhandled error:', error);
-                    res.status(500).json({"message": "Internal server error"});
-                    // Handle other types of errors
-                }
-            });
-    }
-
-
-    static getUserById(id: string): Promise<User> {
-        const cachedUser = userCache.get(id);
-        if (cachedUser) {
-            return Promise.resolve(cachedUser as User);
-        }
-
-        return UsersController.db.query("SELECT * FROM users WHERE id = $1;", [id]).then((result: QueryResult) => {
-            const users: User[] = result.rows.map(row => new User(
-                row.id,
-                row.username,
-                row.email,
-                row.currentairport,
-                row.password_hash,
-                row.password_salt
-            ));
-            if(users.length == 0 ) {
-                throw new Error("User not found")
+        UserService.createUser(req.body.username, req.body.email, req.body.password).then((result) => {
+            res.status(201).json({"success": true});
+        })        .catch(error => {
+            if (error.code === '23505') { // PostgreSQL unique constraint violation error code
+                console.error('Duplicate email address detected.');
+                res.status(400).json({"message": "Email already in use"});
+                // Handle the duplicate email address error
+            } else {
+                console.error('Unhandled error:', error);
+                res.status(500).json({"message": "Internal server error"});
+                // Handle other types of errors
             }
-
-            const user = users[0];
-            if (user) {
-                userCache.set(user.id, user); // Cache the user data
-            }
-
-            return user;
-        }).catch(error => {
-            throw error; // Rethrow the error for further handling
         });
-    }
 
-    static getUserByUsername(username: string): Promise<User> {
-        const cachedUser = userCache.get(username);
-        if (cachedUser) {
-            return Promise.resolve(cachedUser as User);
-        }
-
-        return UsersController.db.query("SELECT * FROM users WHERE username = $1;", [username]).then((result: QueryResult) => {
-            const users: User[] = result.rows.map(row => new User(
-                row.id,
-                row.username,
-                row.email,
-                row.currentairport,
-                row.password_hash,
-                row.password_salt
-            ));
-            if(users.length == 0 ) {
-                throw new Error("User not found")
-            }
-
-            const user = users[0];
-            if (user) {
-                userCache.set(user.id, user); // Cache the user data
-            }
-
-            return user;
-        }).catch(error => {
-            throw error; // Rethrow the error for further handling
-        });
-    }
-
-    static getUserByEmail(email: string): Promise<User> {
-        const cachedUser = userCache.get(email);
-        if (cachedUser) {
-            return Promise.resolve(cachedUser as User);
-        }
-
-        return UsersController.db.query("SELECT * FROM users WHERE email = $1;", [email]).then((result: QueryResult) => {
-            const users: User[] = result.rows.map(row => new User(
-                row.id,
-                row.username,
-                row.email,
-                row.currentairport,
-                row.password_hash,
-                row.password_salt
-            ));
-            if(users.length == 0 ) {
-                throw new UserNotFoundException()
-            }
-
-            const user = users[0];
-            if (user) {
-                userCache.set(user.id, user); // Cache the user data
-            }
-
-            return user;
-        }).catch(error => {
-            throw error; // Rethrow the error for further handling
-        });
     }
 
 
-    static async checkSession(req: Request, res: Response) {
-        const authHeader = req.headers['authorization'];
-        var accessTokenCookie = undefined
-        if(req.cookies != undefined) {
-            accessTokenCookie = req.cookies['access_token']; // Assuming you use cookies for access tokens
-        }
-
-        const token = authHeader?.split(' ')[1] || accessTokenCookie;
-        var userId = await AuthService.verifyAccessToken(token);
-        if(userId != null)
-            res.status(200).json({"message": "valid", "data": {"userId": userId}})
+    static async checkSession(req: CustomRequest, res: Response) {
+        if(req.user != null)
+            res.status(200).json({"message": "valid", "data": {"userId": req.user.userId}})
         else
             res.status(401).json({"message": "unauthorized"})
     }
 
 
-    static async refreshAccessToken(req: Request, res: Response) {
+    static async getCurrentUser(req: CustomRequest, res: Response){
+        if(req.user != null) {
+            var user: User = await UserService.getUserById(req.user.userId);
+            var squadron: Squadron|undefined = undefined;
+            if(user.squadron_id != undefined) {
+                squadron = await SquadronService.getSquadronById(user.squadron_id)
+            }
+            res.status(200).json({"data": {"user": user, "squadron": squadron}});
+        }
+        else
+            res.status(401).json({"message": "unauthorized"})
+    }
+
+
+    static async refreshAccessToken(req: CustomRequest, res: Response) {
         const refreshToken = req.body.refreshToken; // or from the request body
         if (!refreshToken) {
             return res.status(401).json({ message: 'Refresh token not provided.' });
@@ -214,9 +124,4 @@ export class UsersController {
 
 }
 
-class UserNotFoundException extends Error {
-    constructor(message: string = "UserNotFoundException") {
-        super(message);
-        this.name = "UserNotFoundException";
-    }
-}
+

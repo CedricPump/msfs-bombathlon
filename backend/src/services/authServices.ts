@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import {CustomRequest} from "../controllers/customRequest";
 
 class AuthService {
     static async validatePassword(userProvidedPassword: string, storedHashedPassword: string) {
@@ -33,16 +34,25 @@ class AuthService {
         }
     }
 
-    static async generateTokens(userId: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+    static async generateTokens(userId: string): Promise<{ accessToken: string, refreshToken: string, accessTokenExpiration: Date, refreshTokenExpiration: Date } | null> {
         try {
             const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET as string, { expiresIn: '15m' });
             const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '7d' });
-            return { accessToken, refreshToken };
+
+            // Decode the tokens to get their expiration dates
+            const accessTokenDecoded = jwt.decode(accessToken) as { exp: number };
+            const refreshTokenDecoded = jwt.decode(refreshToken) as { exp: number };
+
+            const accessTokenExpiration = new Date(accessTokenDecoded.exp * 1000); // Convert to milliseconds
+            const refreshTokenExpiration = new Date(refreshTokenDecoded.exp * 1000); // Convert to milliseconds
+
+            return { accessToken, refreshToken, accessTokenExpiration, refreshTokenExpiration };
         } catch (err) {
             console.error('Error generating tokens:', err);
             return null;
         }
     }
+
 
     static async verifyAccessToken(token: string): Promise<string | null> {
         try {
@@ -65,9 +75,9 @@ class AuthService {
     }
 
 
-    static async authMiddleware(req: Request, res: Response, next: NextFunction) {
+    static async authMiddleware(req: CustomRequest, res: Response, next: NextFunction) {
         // Define an array of paths that should skip authentication
-        const excludedPaths = ['/users/login', '/users/refreshtoken', '/users/register'];
+        const excludedPaths = ['/user/login', '/user/refreshtoken', '/user/register'];
         console.log(req.path)
         // Check if the current path is in the excludedPaths array
         if (excludedPaths.includes(req.path)) {
@@ -91,6 +101,7 @@ class AuthService {
             return res.status(403).json({ message: 'Invalid token.' });
 
         //req.body["userId"] = userId;
+        req.user = { userId }; // Store userId in req.user
         next();
     }
 }

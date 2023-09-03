@@ -19,7 +19,7 @@ class AuthService {
         console.log(`${this.API_URL}/users/login ${JSON.stringify(body)}`)
         try {
             let response = await axios
-                .post(`${this.API_URL}/users/login`, body);
+                .post(`${this.API_URL}/user/login`, body);
             console.log(`res ${JSON.stringify(response)}`)
             const accessToken = response.data.accessToken;
 
