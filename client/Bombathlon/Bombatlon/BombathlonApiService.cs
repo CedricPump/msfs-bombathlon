@@ -14,7 +14,8 @@ namespace Bombatlon
         private string baseUrl = "";
         private string email = "";
         private string password = "";
-        private string sessionToken = "";
+        private string userId = "";
+        private TokenResponse token = null;
         private string refreshToken = "";
         private string credentialsFilePath = "./credentials.txt";
 
@@ -102,8 +103,7 @@ namespace Bombatlon
                         var tokens = JsonSerializer.Deserialize<TokenResponse>(responseContent);
                         if (tokens != null)
                         {
-                            sessionToken = tokens.AccessToken;
-                            refreshToken = tokens.RefreshToken;
+                            token = tokens;
                             Console.WriteLine("Login successful.");
                         }
                         else
@@ -132,12 +132,12 @@ namespace Bombatlon
 
         public async Task<bool> sendFlightData(Aircraft aircraft)
         {
-            if (string.IsNullOrEmpty(sessionToken))
+            if (string.IsNullOrEmpty(token.accessToken))
             {
                 login();
             }
 
-            if (string.IsNullOrEmpty(sessionToken))
+            if (string.IsNullOrEmpty(token.accessToken))
             {
                 Console.WriteLine("Unable to send flight data without a valid session token.");
                 return false;
@@ -149,8 +149,10 @@ namespace Bombatlon
 
                 using (var httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {sessionToken}");
+                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.accessToken}");
                     var content = new StringContent(flightData, Encoding.UTF8, "application/json");
+
+                    //Todo add userId
 
                     var response = await httpClient.PostAsync($"{baseUrl}/flight/data", content);
 
@@ -176,7 +178,12 @@ namespace Bombatlon
 
     class TokenResponse
     {
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
+        public string accessToken { get; set; }
+        public string refreshToken { get; set; }
+        public string accessTokenExpiration { get; set; }
+        public string refreshTokenExpiration { get; set; }
+        public string userUUID { get; set; }
+        public string userName { get; set; }
+
     }
 }

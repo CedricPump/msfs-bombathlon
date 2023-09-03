@@ -3,9 +3,12 @@
 class PlaneType {
     public displayName: string = "";
     public atcType :string = "";
+    public atcModel :string = "";
+    public title :string = "";
     public maxFuel : number = 0.0;
+    public year: number = 1903;
     public pylons: Map<number,Pylon> = new Map<number,Pylon>();
-    constructor(public id: string) {
+    constructor() {
         // You can add more logic here if needed
     }
 }
@@ -34,3 +37,5 @@ class BombType {
 
     }
 }
+
+export {PlaneType, Plane, Pylon, Loadout}

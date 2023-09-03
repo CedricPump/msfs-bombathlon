@@ -1,0 +1,149 @@
+{
+  "planes":
+  [
+    {
+      "displayName": "F/A-18E Super Hornet",
+      "atcType": "Boeing",
+      "atcModel": "ATCCOM.AC_MODEL_FA18E.0.text",
+      "title": "Boeing F/A 18E Super Hornet...",
+      "maxFuel": 0,
+      "year": 1999,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-14B Tomcat",
+      "atcType": "Tomcat",
+      "atcModel": "F14A",
+      "title": "DCDesigns_F14B...",
+      "maxFuel": 0,
+      "year": 1972,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-14A Tomcat",
+      "atcType": "Tomcat",
+      "atcModel": "F14A",
+      "title": "DCDesigns_F14A...",
+      "maxFuel": 0,
+      "year": 1972,
+      "pylons": {}
+    },
+    {
+      "displayName": "EC145 Eurocopter",
+      "atcType": "$$:H145",
+      "atcModel": "H145",
+      "title": "Airbus H145 Military...",
+      "maxFuel": 0,
+      "year": 2002,
+      "pylons": {}
+    },
+    {
+      "displayName": "AV8B Harrier II",
+      "atcType": "AV8B",
+      "atcModel": "Harrier",
+      "title": "DC Designs AV-8B Harrier II...",
+      "maxFuel": 0,
+      "year": 1989,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-15C Eagle",
+      "atcType": "Eagle",
+      "atcModel": "F15C",
+      "title": "DCD_F15C_Eagle...",
+      "maxFuel": 0,
+      "year": 1972,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-15D Eagle",
+      "atcType": "Eagle",
+      "atcModel": "F15D",
+      "title": "DCD_F15D_Eagle...",
+      "maxFuel": 0,
+      "year": 1972,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-15E Eagle",
+      "atcType": "Eagle",
+      "atcModel": "F15E",
+      "title": "DCD_F15E_Eagle...",
+      "maxFuel": 0,
+      "year": 1988,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-15I Eagle",
+      "atcType": "Eagle",
+      "atcModel": "F15I",
+      "title": "DCD_F15I_Eagle...",
+      "maxFuel": 0,
+      "year": 1997,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-35A Lightning II",
+      "atcType": "Lockheed Martin",
+      "atcModel": "F35",
+      "title": "F-35A Lightning II...",
+      "maxFuel": 0,
+      "year": 2015,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-35B Lightning II",
+      "atcType": "Lockheed Martin",
+      "atcModel": "F35",
+      "title": "F-35B Lightning II...",
+      "maxFuel": 0,
+      "year": 2015,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-35C Lightning II",
+      "atcType": "Lockheed Martin",
+      "atcModel": "F35",
+      "title": "F-35C Lightning II...",
+      "maxFuel": 0,
+      "year": 2015,
+      "pylons": {}
+    },
+    {
+      "displayName": "F-16C Fighting Falcon",
+      "atcType": "F16",
+      "atcModel": "Falcon",
+      "title": "SC Designs F16C Fighting Falcon...",
+      "maxFuel": 0,
+      "year": 1978,
+      "pylons": {}
+    }  ,
+    {
+      "displayName": "F-16D Fighting Falcon",
+      "atcType": "F16",
+      "atcModel": "Falcon",
+      "title": "SC Designs F16D Fighting Falcon...",
+      "maxFuel": 0,
+      "year": 1978,
+      "pylons": {}
+    }  ,
+    {
+      "displayName": "F-16I Fighting Falcon",
+      "atcType": "F16",
+      "atcModel": "Falcon",
+      "title": "SC Designs F16I Fighting Falcon...",
+      "maxFuel": 0,
+      "year": 1978,
+      "pylons": {}
+    },
+    {
+      "displayName": "Bf 109 G-6",
+      "atcType": "Messerschmitt",
+      "atcModel": "Bf109",
+      "title": "FlyingIron BF 109G-6...",
+      "maxFuel": 0,
+      "year": 1941,
+      "pylons": {}
+    }
+  ]
+}

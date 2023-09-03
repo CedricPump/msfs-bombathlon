@@ -16,6 +16,8 @@ namespace Bombatlon
         private Dictionary<DATA_DEFINE_ID, DataDefinition> definitions = new Dictionary<DATA_DEFINE_ID, DataDefinition>();
 
         public string Model { get; private set; }
+        public string Type { get; private set; }
+        public string Title { get; private set; }
         public double Altitude { get; private set; }
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
@@ -30,6 +32,7 @@ namespace Bombatlon
         public bool isParkingBreak { get; private set; }
         public double Fuel { get; private set; }
         public bool isSimConnectConnected { get; private set; } = false;
+        public bool simDisabled { get; private set; } = true;
 
 
         public string toString()
@@ -80,6 +83,7 @@ namespace Bombatlon
             CreateDataDefinition("FUEL TOTAL QUANTITY WEIGHT", "pounds");
             // Action
             CreateDataDefinition("SMOKE ENABLE", "Bool");
+            CreateDataDefinition("SIM DISABLED", "Bool");
 
             Console.WriteLine("init done");
         }
@@ -126,7 +130,7 @@ namespace Bombatlon
             }
             catch (COMException ex)
             {
-                Console.WriteLine("Unable to connect: " + ex.Message + "Check if MSFS is running!");
+                Console.WriteLine("Unable to connect, Check if MSFS is running!");
                 simconnect = null;
                 isSimConnectConnected = false;
                 return null;
@@ -140,7 +144,7 @@ namespace Bombatlon
                 simconnect.ReceiveMessage();
                 foreach (int i in definitions.Keys)
                 {
-                    simconnect.RequestDataOnSimObjectType(definitions[(DATA_DEFINE_ID)i].reqId, definitions[(DATA_DEFINE_ID)i].defId, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+                    //simconnect.RequestDataOnSimObjectType(definitions[(DATA_DEFINE_ID)i].reqId, definitions[(DATA_DEFINE_ID)i].defId, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
                 }
             }
             else
@@ -166,6 +170,16 @@ namespace Bombatlon
                     case "ATC MODEL":
                         {
                             Model = result.sValue;
+                            break;
+                        }
+                    case "ATC TYPE":
+                        {
+                            Type = result.sValue;
+                            break;
+                        }
+                    case "TITLE":
+                        {
+                            Title = result.sValue;
                             break;
                         }
                 }
@@ -228,6 +242,11 @@ namespace Bombatlon
                     case "ENG COMBUSTION":
                         {
                             isEngineOn = (double)data.dwData[0] > 0;
+                            break;
+                        }
+                    case "SIM DISABLED":
+                        {
+                            simDisabled = (double)data.dwData[0] > 0;
                             break;
                         }
                     case "BRAKE PARKING POSITION":

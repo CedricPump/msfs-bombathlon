@@ -1,6 +1,8 @@
 // src/models/Plane.ts
 
 // instance of a current flight in progress
+import {Plane} from "./Plane";
+
 class Flight {
     public currentPosition: Position|undefined = undefined;
     public lastPositions: Position[] = [];
@@ -22,3 +24,5 @@ class Position {
     public velocityY: number = 0.0;
     public velocityZ: number = 0.0;
 }
+
+export {Flight, Position}

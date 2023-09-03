@@ -1,4 +1,4 @@
-// tsconfig.json
+// planes.json
 
 {
   "compilerOptions": {
@@ -7,8 +7,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/schemas/*.json"],
   "exclude": ["node_modules"]
 }

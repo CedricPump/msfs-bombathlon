@@ -33,11 +33,15 @@ class UserService {
                 return true
             })
             .catch(error => {
+                console.error(error.toString(), error.code)
                 if (error.code === '23505') { // PostgreSQL unique constraint violation error code
-                    throw new DuplicateEmailException();
-                } else {
-                    throw error;
+                    if (error.toString().includes("users_username_key"))
+                        throw new DuplicateNameException();
+                    if (error.toString().includes("users_email_key"))
+                        throw new DuplicateEmailException();
                 }
+                throw error;
+
             });
     }
 
@@ -151,4 +155,11 @@ class DuplicateEmailException extends Error {
     }
 }
 
-export {UserService, UserNotFoundException};
+class DuplicateNameException extends Error {
+    constructor(message: string = "DuplicateEmailException") {
+        super(message);
+        this.name = "DuplicateEmailException";
+    }
+}
+
+export {UserService, UserNotFoundException, DuplicateEmailException, DuplicateNameException};

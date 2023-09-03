@@ -4,14 +4,23 @@ import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { CockroachDbService } from '../services/dbService';
 import { AuthService } from  '../services/authServices';
-import {UserNotFoundException, UserService} from '../services/userSerivce';
+import {
+    DuplicateEmailException,
+    DuplicateNameException,
+    UserNotFoundException,
+    UserService
+} from '../services/userSerivce';
 import { QueryResult } from "pg";
 import NodeCache from "node-cache";
 import {Squadron} from "../models/Squadron";
 import {SquadronService} from "../services/squadronService";
 import {CustomRequest} from "./customRequest";
+import { Validator } from 'jsonschema';
 
+import createUserSchema from "../schemas/createUserSchema.json";
+import loginSchema from "../schemas/loginSchema.json";
 
+const validator = new Validator();
 
 export class UsersController {
 
@@ -21,6 +30,11 @@ export class UsersController {
     }
 
     static async login(req: CustomRequest, res: Response) {
+        const validationResult = validator.validate(req.body, loginSchema);
+
+        if (!validationResult.valid) {
+            return res.status(400).json({ message: 'Invalid request body', errors: validationResult.errors });
+        }
 
         const { email, password } = req.body;
         console.log(`login: ${email}`)
@@ -63,19 +77,26 @@ export class UsersController {
 
 
     static async createUser(req: CustomRequest, res: Response) {
+        const validationResult = validator.validate(req.body, createUserSchema);
+        if (!validationResult.valid) {
+            return res.status(400).json({ message: 'Invalid request body', errors: validationResult.errors });
+        }
+
         console.log(`createUser: ${req.body.username}`);
         UserService.createUser(req.body.username, req.body.email, req.body.password).then((result) => {
             res.status(201).json({"success": true});
-        })        .catch(error => {
-            if (error.code === '23505') { // PostgreSQL unique constraint violation error code
+        }).catch(error => {
+            if (error instanceof DuplicateEmailException) { // PostgreSQL unique constraint violation error code
                 console.error('Duplicate email address detected.');
                 res.status(400).json({"message": "Email already in use"});
-                // Handle the duplicate email address error
-            } else {
-                console.error('Unhandled error:', error);
-                res.status(500).json({"message": "Internal server error"});
-                // Handle other types of errors
+                return
+            } else if (error instanceof DuplicateNameException) { // PostgreSQL unique constraint violation error code
+                console.error('Duplicate name address detected.');
+                res.status(400).json({"message": "Username already in use"});
+                return
             }
+            console.error('Unhandled error:', error);
+            res.status(500).json({"message": "Internal server error"});
         });
 
     }

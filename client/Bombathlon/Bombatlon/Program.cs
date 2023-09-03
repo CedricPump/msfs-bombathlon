@@ -21,7 +21,7 @@ namespace Bombathlon
                 try
                 {
                     aircraft.Update();
-                    if (aircraft.isSimConnectConnected)
+                    if (aircraft.isSimConnectConnected && !aircraft.simDisabled)
                     {
                         Console.WriteLine(JsonSerializer.Serialize(aircraft));
                         api.sendFlightData(aircraft);
