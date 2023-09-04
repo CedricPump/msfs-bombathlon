@@ -1,14 +1,17 @@
 import NodeCache from "node-cache";
-import {CockroachDbService} from "./dbService";
+import {DbService, DBServiceFactory} from "./dbService";
 import {QueryResult} from "pg";
 import {User} from "../models/User";
 import {AuthService} from "./authServices";
-import squadrons from "../routes/squadrons";
+import {DuplicateEmailException, DuplicateNameException, UserNotFoundException} from "../errors/errors";
+//import uuid from "uuid";
+import {v4 as uuidv4} from "uuid";
+
 
 const userCache = new NodeCache({ stdTTL: 30 * 60 }); // 39 min
 
 class UserService {
-    private static db: CockroachDbService = CockroachDbService.getInstance()
+    private static db: DbService = DBServiceFactory.createDBService();
 
     public static async getALlUsers(): Promise<User[]> {
         return UserService.db.query("SELECT * FROM users").then((result: QueryResult) => {
@@ -27,7 +30,7 @@ class UserService {
     static async createUser(username: string, email: string, password: string): Promise<boolean> {
         var password_hash = await AuthService.hashPassword(password);
 
-        return UserService.db.query("INSERT INTO users (id, username, email, password_hash, password_salt) VALUES ( UUID_GENERATE_V4(), $1, $2, $3, $4);", [username, email, password_hash, ""])
+        return UserService.db.query("INSERT INTO users (id, username, email, password_hash, password_salt) VALUES ( $1, $2, $3, $4, $5 );", [uuidv4(), username, email, password_hash, ""])
             .then((result: QueryResult) => {
                 // Successful insertion
                 return true
@@ -141,25 +144,6 @@ class UserService {
     }
 }
 
-class UserNotFoundException extends Error {
-    constructor(message: string = "UserNotFoundException") {
-        super(message);
-        this.name = "UserNotFoundException";
-    }
-}
 
-class DuplicateEmailException extends Error {
-    constructor(message: string = "DuplicateEmailException") {
-        super(message);
-        this.name = "DuplicateEmailException";
-    }
-}
 
-class DuplicateNameException extends Error {
-    constructor(message: string = "DuplicateEmailException") {
-        super(message);
-        this.name = "DuplicateEmailException";
-    }
-}
-
-export {UserService, UserNotFoundException, DuplicateEmailException, DuplicateNameException};
+export {UserService};

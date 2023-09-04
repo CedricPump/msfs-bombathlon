@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS squadrons (
     id UUID PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    owner UUID REFERENCES users(id) NOT NULL,
+    owner UUID REFERENCES users(id),
     score INT DEFAULT 0
 );
 

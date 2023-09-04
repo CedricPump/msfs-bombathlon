@@ -104,6 +104,32 @@ class AuthService {
         req.user = { userId }; // Store userId in req.user
         next();
     }
+
+    static async generateSquadronInviteToken(squadronId: string, expirationDays: number) {
+        try {
+            const inviteToken = jwt.sign({ squadronId }, process.env.JWT_SECRET as string, { expiresIn: expirationDays+'d' });
+
+            // Decode the tokens to get their expiration dates
+            const inviteTokenDecoded = jwt.decode(inviteToken) as { exp: number };
+
+            const accessTokenExpiration = new Date(inviteTokenDecoded.exp * 1000); // Convert to milliseconds
+
+            return { inviteToken, accessTokenExpiration };
+        } catch (err) {
+            console.error('Error generating tokens:', err);
+            return null;
+        }
+    }
+
+    static async verifySquadronInviteToken(inviteToken: string): Promise<string | null> {
+        try {
+            const decoded = jwt.verify(inviteToken, process.env.JWT_SECRET as string) as { squadronId: string };
+            return decoded.squadronId;
+        } catch (err) {
+            console.error('Error verifying refresh token:', err);
+            return null;
+        }
+    }
 }
 
 export { AuthService };

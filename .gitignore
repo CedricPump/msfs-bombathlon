@@ -14,3 +14,5 @@ backend/.idea/
 client/Bombathlon/Bombatlon/bin/
 client/Bombathlon/Bombatlon/obj/
 client/Bombathlon/.vs/Bombathlon/v17/.suo
+database/bombathlon.sqbpro
+database/bombathlon.db

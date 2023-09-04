@@ -2,16 +2,10 @@
 
 import { Request, Response } from 'express';
 import { User } from '../models/User';
-import { CockroachDbService } from '../services/dbService';
 import { AuthService } from  '../services/authServices';
 import {
-    DuplicateEmailException,
-    DuplicateNameException,
-    UserNotFoundException,
     UserService
 } from '../services/userSerivce';
-import { QueryResult } from "pg";
-import NodeCache from "node-cache";
 import {Squadron} from "../models/Squadron";
 import {SquadronService} from "../services/squadronService";
 import {CustomRequest} from "./customRequest";
@@ -19,6 +13,7 @@ import { Validator } from 'jsonschema';
 
 import createUserSchema from "../schemas/createUserSchema.json";
 import loginSchema from "../schemas/loginSchema.json";
+import {DuplicateEmailException, DuplicateNameException, UserNotFoundException} from "../errors/errors";
 
 const validator = new Validator();
 
@@ -26,7 +21,7 @@ export class UsersController {
 
     static getAllUsers(req: CustomRequest, res: Response) {
         console.log(`get all users`)
-        res.status(200).json(UserService.getALlUsers())
+        return res.status(200).json(UserService.getALlUsers())
     }
 
     static async login(req: CustomRequest, res: Response) {

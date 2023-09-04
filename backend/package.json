@@ -30,13 +30,16 @@
     "jsonwebtoken": "^9.0.2",
     "node-cache": "^5.1.2",
     "pg": "^8.11.3",
+    "sqlite3": "^5.1.6",
     "tsc": "^2.0.4",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
     "@types/jsonwebtoken": "^9.0.2",
-    "@types/pg": "^8.10.2"
+    "@types/pg": "^8.10.2",
+    "@types/uuid": "^9.0.3"
   }
 }
