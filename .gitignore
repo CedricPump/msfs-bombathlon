@@ -16,3 +16,11 @@ client/Bombathlon/Bombatlon/obj/
 client/Bombathlon/.vs/Bombathlon/v17/.suo
 database/bombathlon.sqbpro
 database/bombathlon.db
+plane_export/Plane_Export/Bombatlon/bin/
+plane_export/Plane_Export/packages/
+plane_export/Plane_Export/publish/
+plane_export/Plane_Export/Bombatlon/obj/
+plane_export/Plane_Export/Bombatlon/SimConnect.dll
+plane_export/Plane_Export/Bombatlon/SimConnect.lib
+plane_export/Plane_Export/Bombatlon/Microsoft.FlightSimulator.SimConnect.dll
+plane_export/Plane_Export/.vs/PlaneExport/v17/.suo
