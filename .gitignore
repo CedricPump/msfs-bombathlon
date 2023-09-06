@@ -24,3 +24,6 @@ plane_export/Plane_Export/Bombatlon/SimConnect.dll
 plane_export/Plane_Export/Bombatlon/SimConnect.lib
 plane_export/Plane_Export/Bombatlon/Microsoft.FlightSimulator.SimConnect.dll
 plane_export/Plane_Export/.vs/PlaneExport/v17/.suo
+database/airport.sqbpro
+database/airport.sqlite
+plane_export/Plane_Export/.vs/PlaneExport/project-colors.json
