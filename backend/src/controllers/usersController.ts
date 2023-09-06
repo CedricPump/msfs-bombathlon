@@ -10,7 +10,6 @@ import {Squadron} from "../models/Squadron";
 import {SquadronService} from "../services/squadronService";
 import {CustomRequest} from "./customRequest";
 import { Validator } from 'jsonschema';
-
 import createUserSchema from "../schemas/createUserSchema.json";
 import loginSchema from "../schemas/loginSchema.json";
 import {DuplicateEmailException, DuplicateNameException, UserNotFoundException} from "../errors/errors";
