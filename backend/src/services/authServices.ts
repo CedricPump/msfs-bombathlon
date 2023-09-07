@@ -34,7 +34,7 @@ class AuthService {
         }
     }
 
-    static async generateTokens(userId: string): Promise<{ accessToken: string, refreshToken: string, accessTokenExpiration: Date, refreshTokenExpiration: Date } | null> {
+    static async generateTokens(userId: string): Promise<{ accessToken: string, refreshToken: string, accessTokenExpiration: Date, refreshTokenExpiration: Date } > {
         try {
             const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET as string, { expiresIn: '15m' });
             const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '7d' });
@@ -49,7 +49,7 @@ class AuthService {
             return { accessToken, refreshToken, accessTokenExpiration, refreshTokenExpiration };
         } catch (err) {
             console.error('Error generating tokens:', err);
-            return null;
+            throw Error('Error generating tokens')
         }
     }
 

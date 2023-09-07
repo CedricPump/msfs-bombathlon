@@ -13,11 +13,11 @@ export class SquadronsController {
     static async getSquadronOwn(req: CustomRequest, res: Response){
         if(req.user == null) throw new OwnUserNotSetException();
         var currentUser = await UserService.getUserById(req.user.userId);
-        if(currentUser.squadron_id == undefined) {
+        if(currentUser.squadron == undefined) {
             res.status(404).json({"message":"User has no squadron"});
             return
         }
-        var squadron = await SquadronService.getSquadronById(currentUser.squadron_id)
+        var squadron = await SquadronService.getSquadronById(currentUser.squadron)
         res.status(200).json(squadron)
     }
 
@@ -28,7 +28,7 @@ export class SquadronsController {
     static async createSquadron(req: CustomRequest, res: Response) {
         if(req.user == null) throw new OwnUserNotSetException();
         var currentUser = await UserService.getUserById(req.user.userId);
-        if(currentUser.squadron_id != undefined) {
+        if(currentUser.squadron != undefined) {
             res.status(400).json({"message":"User already has a squadron"});
             return
         }
@@ -40,11 +40,11 @@ export class SquadronsController {
     static async createInvite(req: CustomRequest, res: Response) {
         if(req.user == null) throw new OwnUserNotSetException();
         var currentUser = await UserService.getUserById(req.user.userId);
-        if(currentUser.squadron_id == undefined) {
+        if(currentUser.squadron == undefined) {
             res.status(404).json({"message":"User has no squadron"});
             return
         }
-        var squadron = await SquadronService.getSquadronById(currentUser.squadron_id)
+        var squadron = await SquadronService.getSquadronById(currentUser.squadron)
         if(squadron.owner != currentUser.id) {
             res.status(400).json({"message":"User is not squadron owner"});
             return
@@ -58,7 +58,7 @@ export class SquadronsController {
     static async joinSquadron(req: CustomRequest, res: Response) {
         if(req.user == null) throw new OwnUserNotSetException();
         var currentUser = await UserService.getUserById(req.user.userId);
-        if(currentUser.squadron_id != undefined) {
+        if(currentUser.squadron != undefined) {
             res.status(400).json({"message":"User already has a squadron"});
             return
         }

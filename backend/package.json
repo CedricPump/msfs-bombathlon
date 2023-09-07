@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "start-backend": "node dist/app.js",
-    "build-backend": "tsc",
+    "build-backend": "npx tsc",
     "test-bakcend": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

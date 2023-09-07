@@ -13,7 +13,7 @@ const userCache = new NodeCache({ stdTTL: 30 * 60 }); // 39 min
 class UserService {
     private static db: DbService = DBServiceFactory.createDBService();
 
-    public static async getALlUsers(): Promise<User[]> {
+    public static async getAllUsers(): Promise<User[]> {
         return UserService.db.query("SELECT * FROM users").then((result: QueryResult) => {
             return result.rows.map(row => new User(
                 row.id,
@@ -49,23 +49,19 @@ class UserService {
     }
 
     static getUserById(id: string): Promise<User> {
-        const cachedUser = userCache.get(id);
-        if (cachedUser) {
-            return Promise.resolve(cachedUser as User);
-        }
 
-        return UserService.db.query("SELECT u.id, u.username, u.email, u.currentairport, s.id AS squadron_id\n" +
-            "FROM users u JOIN user_squadron_mapping usm ON u.id = usm.user_id\n" +
-            "JOIN squadrons s ON usm.squadron_id = s.id WHERE u.id = $1;", [id]).then((result: QueryResult) => {
+        return UserService.db.query("SELECT u.id, u.name, u.email, u.currentairport, usm.squadron_id AS squadron_id FROM users u LEFT JOIN user_squadron_mapping usm ON u.id = usm.user_id WHERE u.id = $1;", [id])
+            .then((result: QueryResult) => {
             const users: User[] = result.rows.map(row => new User(
                 row.id,
-                row.username,
+                row.name,
                 row.email,
                 row.currentairport,
                 "",
                 "",
                 row.squadron_id
             ));
+            console.log("getUserById "+users)
             if(users.length == 0 ) {
                 throw new UserNotFoundException()
             }
@@ -82,10 +78,12 @@ class UserService {
     }
 
     static getUserByUsername(username: string): Promise<User> {
+        /*
         const cachedUser = userCache.get(username);
         if (cachedUser) {
             return Promise.resolve(cachedUser as User);
         }
+        */
 
         return UserService.db.query("SELECT * FROM users WHERE username = $1;", [username]).then((result: QueryResult) => {
             const users: User[] = result.rows.map(row => new User(
@@ -113,15 +111,11 @@ class UserService {
     }
 
     static getUserByEmail(email: string): Promise<User> {
-        const cachedUser = userCache.get(email);
-        if (cachedUser) {
-            return Promise.resolve(cachedUser as User);
-        }
 
         return UserService.db.query("SELECT * FROM users WHERE email = $1;", [email]).then((result: QueryResult) => {
             const users: User[] = result.rows.map(row => new User(
                 row.id,
-                row.username,
+                row.name,
                 row.email,
                 row.currentairport,
                 row.password_hash,

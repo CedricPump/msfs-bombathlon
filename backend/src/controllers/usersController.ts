@@ -20,7 +20,7 @@ export class UsersController {
 
     static getAllUsers(req: CustomRequest, res: Response) {
         console.log(`get all users`)
-        return res.status(200).json(UserService.getALlUsers())
+        return res.status(200).json(UserService.getAllUsers())
     }
 
     static async login(req: CustomRequest, res: Response) {
@@ -54,7 +54,7 @@ export class UsersController {
             console.log("return tokens")
             return res.status(200).json({
                 "userUUID": user.id,
-                "userName": user.username,
+                "userName": user.name,
                 "accessToken": tokens.accessToken,
                 "refreshToken": tokens.refreshToken,
                 "accessTokenExpiration": tokens.accessTokenExpiration,
@@ -108,8 +108,8 @@ export class UsersController {
         if(req.user != null) {
             var user: User = await UserService.getUserById(req.user.userId);
             var squadron: Squadron|undefined = undefined;
-            if(user.squadron_id != undefined) {
-                squadron = await SquadronService.getSquadronById(user.squadron_id)
+            if(user.squadron != undefined) {
+                squadron = await SquadronService.getSquadronById(user.squadron)
             }
             res.status(200).json({"data": {"user": user, "squadron": squadron}});
         }
