@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Bombatlon
@@ -12,18 +14,57 @@ namespace Bombatlon
         private string host = "localhost";
         private int port = 8000;
         private string baseUrl = "";
+        private string WebSocketUrl = "";
         private string email = "";
         private string password = "";
         private string userId = "";
         private TokenResponse token = null;
         private string refreshToken = "";
         private string credentialsFilePath = "./credentials.txt";
+        private ClientWebSocket webSocket;
 
         public BombathlonApiService()
         {
-            baseUrl = "http://" + host + ":" + port + "/api";
+            this.baseUrl = $"http://{host}:{port}/api";
+            this.WebSocketUrl = $"ws://{host}:{port}/ws";
+
+            Console.WriteLine($"load login credentials");
             loadLoginCredentials();
+            Console.WriteLine($"login");
             login();
+            Console.WriteLine($"connect WebSocket");
+            connectWebsocketAsync();
+        }
+
+        private async Task connectWebsocketAsync()
+        {
+            Console.WriteLine($"connecting WS {WebSocketUrl}");
+            this.webSocket = new ClientWebSocket();
+            {
+                try
+                {
+                    webSocket.Options.SetRequestHeader("Authorization", $"Bearer {token.accessToken}");
+
+                    // Connect to the WebSocket server
+                    await this.webSocket.ConnectAsync(new Uri(WebSocketUrl), CancellationToken.None);
+
+                    // Start a separate thread to receive messages
+                    var receiveTask = ReceiveWS();
+
+                    // Send a message
+                    string message = $"Connect {token.userUUID}";
+                    await this.SendMessageWS(message);
+
+                    Console.WriteLine($"connected WS");
+
+                    // Wait for the receive task to complete
+                    await receiveTask;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception WS: {ex.Message}");
+                }
+            }
         }
 
         private void loadLoginCredentials()
@@ -129,28 +170,20 @@ namespace Bombatlon
             }
         }
 
-
-        public async Task<bool> sendFlightData(Aircraft aircraft)
+        private async Task SendMessageWS(string message)
         {
-            if (string.IsNullOrEmpty(token.accessToken))
-            {
-                login();
-            }
+            byte[] buffer = Encoding.UTF8.GetBytes(message);
+            await this.webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+        }
 
-            if (string.IsNullOrEmpty(token.accessToken))
-            {
-                Console.WriteLine("Unable to send flight data without a valid session token.");
-                return false;
-            }
-
+        private async Task SendMessageHTTP(string message)
+        {
             try
             {
-                string flightData = JsonSerializer.Serialize(aircraft);
-
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.accessToken}");
-                    var content = new StringContent(flightData, Encoding.UTF8, "application/json");
+                    var content = new StringContent(message, Encoding.UTF8, "application/json");
 
                     //Todo add userId
 
@@ -159,7 +192,7 @@ namespace Bombatlon
                     if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("Flight data sent successfully.");
-                        return true;
+                        return;
                     }
                     else
                     {
@@ -171,8 +204,58 @@ namespace Bombatlon
             {
                 Console.WriteLine("Error sending flight data: " + ex.Message);
             }
+        }
+
+        private async Task ReceiveWS()
+        {
+            byte[] buffer = new byte[1024];
+            while (this.webSocket.State == WebSocketState.Open)
+            {
+                WebSocketReceiveResult result = await this.webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    Console.WriteLine($"Received message: {receivedMessage}");
+                }
+                else if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    Console.WriteLine("WebSocket closed by the server.");
+                    break;
+                }
+            }
+        }
+
+
+        public async Task<bool> sendFlightData(Aircraft aircraft)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(token.accessToken))
+                {
+                    login();
+                }
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("can't login " + ex.Message);
+            }
+
+            if (string.IsNullOrEmpty(token.accessToken))
+            {
+                Console.WriteLine("Unable to send flight data without a valid session token.");
+                return false;
+            }
+
+            string flightData = JsonSerializer.Serialize(aircraft);
+            SendMessageWS(flightData);
 
             return false;
+        }
+
+        public async Task closeAsync()
+        {
+            // Close the WebSocket connection
+            await this.webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "disconnecting", CancellationToken.None);
         }
     }
 

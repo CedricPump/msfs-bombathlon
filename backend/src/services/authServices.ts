@@ -1,3 +1,5 @@
+// authSerivce.ts
+
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
@@ -78,7 +80,7 @@ class AuthService {
     static async authMiddleware(req: CustomRequest, res: Response, next: NextFunction) {
         // Define an array of paths that should skip authentication
         const excludedPaths = ['/user/login', '/user/refreshtoken', '/user/register'];
-        console.log(req.path)
+        console.log(`auth middleware checking: ${req.path}`)
         // Check if the current path is in the excludedPaths array
         if (excludedPaths.includes(req.path)) {
             return next(); // Skip authentication
@@ -91,14 +93,17 @@ class AuthService {
         }
 
         const token = authHeader?.split(' ')[1] || accessTokenCookie;
-
+        console.log(`auth provided token: ${token}`)
         if (!token) {
+            console.log('Access token not provided.')
             return res.status(401).json({ message: 'Access token not provided.' });
         }
 
         var userId = await AuthService.verifyAccessToken(token);
-        if(userId == null)
+        if(userId == null){
+            console.log('Invalid token.')
             return res.status(403).json({ message: 'Invalid token.' });
+        }
 
         //req.body["userId"] = userId;
         req.user = { userId }; // Store userId in req.user

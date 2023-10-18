@@ -168,6 +168,8 @@ namespace PlaneExport
                             Title = result.sValue;
                             break;
                         }
+
+                    // Payloads
                     case "PAYLOAD STATION NAME:1":
                         {
                             payloadNames[0] = result.sValue;

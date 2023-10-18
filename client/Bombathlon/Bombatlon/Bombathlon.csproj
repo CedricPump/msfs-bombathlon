@@ -149,6 +149,7 @@
   <ItemGroup>
     <Compile Include="Aircraft.cs" />
     <Compile Include="BombathlonApiService.cs" />
+    <Compile Include="Bomb.cs" />
     <Compile Include="DataDefinition.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,32 +1,43 @@
 import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, MapContainerProps } from 'react-leaflet';
+import planeIcon from '../assets/leaflet/planeIcon.png';
 import apiService from '../services/ApiService'; // Import your API service
+import 'leaflet/dist/leaflet.css';
+import {DivIcon, Icon, LatLng} from "leaflet";
 
 function HomePage() {
-    const [userData , setUserData] = useState(null); // State to store user data
 
-    useEffect(() => {
-        // Fetch user data when the component mounts
-        apiService.getCurrentUser()
-            .then((data) => {
-                // Store the fetched user data in the state
-                //setUserData(data);
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-    }, []); // Empty dependency array means this effect runs once when the component mounts
+    const airports = [
+        { ICAO: 'ABC', position: new LatLng(52.52, 13.405, 0) }, // Replace with your actual airport data
+        // Add more airports as needed
+    ];
 
-    return (
+    const airplane = {
+        position: new LatLng(52.52, 13.405, 0), // Replace with your actual airplane position
+    };
+
+    const airplaneIcon = new Icon({
+        iconUrl: planeIcon,
+        iconSize: [32, 32],
+    });
+
+    return  (
         <div>
             <h1>Home Page</h1>
-            {userData ? (
-                <div>
-                    <h2>Welcome, {userData}!</h2>
-                    {/* Render other user data here */}
-                </div>
-            ) : (
-                <p>Loading user data...</p>
-            )}
+            <div>
+                <h2>Welcome</h2>
+                <MapContainer center={[50.5, 30.5]} zoom={6} style={{ height: '400px', width: '100%' }}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    {airports.map((airport, index) => (
+                        <Marker key={`airport-${index}`} position={airport.position}>
+                            <Popup>{airport.ICAO}</Popup>
+                        </Marker>
+                    ))}
+                    <Marker position={airplane.position} icon={airplaneIcon}>
+                        <Popup>Airplane</Popup>
+                    </Marker>
+                </MapContainer>
+            </div>
         </div>
     );
 }
