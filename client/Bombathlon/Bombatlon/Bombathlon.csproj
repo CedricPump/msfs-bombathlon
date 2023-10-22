@@ -150,7 +150,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\AircraftState.cs" />
     <Compile Include="Model\BombDropData.cs" />
+    <Compile Include="Model\InitFlightData.cs" />
     <Compile Include="Sim\Aircraft.cs" />
     <Compile Include="API\BombathlonApiService.cs" />
     <Compile Include="Model\Bomb.cs" />

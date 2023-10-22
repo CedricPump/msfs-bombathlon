@@ -15,26 +15,38 @@ namespace Bombatlon
         private Dictionary<DATA_DEFINE_ID, DataDefinition> definitions = new Dictionary<DATA_DEFINE_ID, DataDefinition>();
         private Dictionary<string, DataDefinition> definitions_by_string = new Dictionary<string, DataDefinition>();
 
+        // Payload
         public double PayloadCount { get; private set; }
         public double[] PayloadWeight { get; private set; } = new double[16];
+        // Ident
         public string Model { get; private set; }
         public string Type { get; private set; }
         public string Title { get; private set; }
+        // Position
         public double Altitude { get; private set; }
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
-        public double GroundSpeed { get; private set; }
         public double Heading { get; private set; }
+        // Movement
+        public double GroundSpeed { get; private set; }
         public double vX { get; private set; }
         public double vY { get; private set; }
         public double vZ { get; private set; }
-        public bool isOnRundway { get; private set; }
-        public bool isOnGround { get; private set; }
-        public bool isEngineOn { get; private set; }
-        public bool isParkingBreak { get; private set; }
+        // State
+        public bool IsOnRundway { get; private set; }
+        public bool IsOnGround { get; private set; }
+        public bool IsEngineOn { get; private set; }
+        public bool IsParkingBreak { get; private set; }
         public double Fuel { get; private set; }
-        public bool isSimConnectConnected { get; private set; } = false;
-        public bool simDisabled { get; private set; } = true;
+        public string Airport { get; private set; }
+        // Sim
+        public bool IsSimConnectConnected { get; private set; } = false;
+        public bool SimDisabled { get; private set; } = true;
+        // AntiCheat
+        public bool CrashEnabled { get; private set; } = true;
+        public bool IsSlew { get; private set; } = true;
+        public int TimeAcceleration { get; private set; } = 1;
+
 
 
 
@@ -51,10 +63,11 @@ namespace Bombatlon
 
         public enum EVENTS
         {
-            SimStart,               // SimStart
-            SimStop,                // SimStop
-            Crashed,                // Crashed
-            AircraftLoaded,         // AircraftLoaded
+            SimStart,
+            SimStop,
+            Crashed,
+            AircraftLoaded,
+            FlightLoaded,
             LANDING_LIGHTS_TOGGLE,
             PARKING_BRAKES,
             PARKING_BRAKE_SET,
@@ -66,7 +79,11 @@ namespace Bombatlon
             HORN_TRIGGER,
             PAUSE_TOGGLE,
             PAUSE_ON,
-            PAUSE_OFF
+            PAUSE_OFF,
+            SIM_RATE,
+            SIM_RATE_DECR,
+            SIM_RATE_INCR,
+            SIM_RATE_SET
         };
 
         public static EVENTS[] SystemEvents = new EVENTS[] {
@@ -74,12 +91,13 @@ namespace Bombatlon
             EVENTS.SimStop,
             EVENTS.Crashed,
             EVENTS.AircraftLoaded,
+            EVENTS.FlightLoaded
         };
 
 
         public Aircraft()
         {
-            isSimConnectConnected = false;
+            IsSimConnectConnected = false;
             ConnectSimConnect();
         }
 
@@ -87,14 +105,14 @@ namespace Bombatlon
         {
             return new Telemetrie
             {
-                Latitude = Latitude,
-                Longitude = Longitude,
-                Altitude = Altitude,
-                GroundSpeed = GroundSpeed,
-                Heading = Heading,
-                vX = vX,
-                vY = vY,
-                vZ = vZ
+                Latitude = this.Latitude,
+                Longitude = this.Longitude,
+                Altitude = this.Altitude,
+                GroundSpeed = this.GroundSpeed,
+                Heading = this.Heading,
+                vX = this.vX,
+                vY = this.vY,
+                vZ = this.vZ
             };
         }
 
@@ -102,9 +120,19 @@ namespace Bombatlon
         {
             return new Ident
             {
-                Model = Model,
-                Title = Title,
-                Type = Type,
+                Model = this.Model,
+                Title = this.Title,
+                Type = this.Type,
+            };
+        }
+
+        public AircraftState GetState()
+        {
+            return new AircraftState
+            {
+                EngineOn = this.IsEngineOn,
+                Fuel = this.Fuel,
+                ParkingBrake = this.IsParkingBreak
             };
         }
 
@@ -133,13 +161,15 @@ namespace Bombatlon
             CreateDataDefinition("VELOCITY WORLD Y", "meter per second");
             CreateDataDefinition("VELOCITY WORLD Z", "meter per second");
             // Anti-Cheat
-            //CreateDataDefinition("SIM SPEED", "");
+            CreateDataDefinition("REALISM CRASH DETECTION", "");
+            CreateDataDefinition("IS SLEW ACTIVE", "");
             // State
             CreateDataDefinition("ENG COMBUSTION", "Bool");
             CreateDataDefinition("BRAKE PARKING POSITION", "Bool");
-            //CreateDataDefinition("EGEAR POSITION", "Bool");
             CreateDataDefinition("GEAR IS ON GROUND", "Bool");
+            CreateDataDefinition("SIM ON GROUND", "Bool");
             CreateDataDefinition("ON ANY RUNWAY", "Bool");
+            CreateDataDefinition("NAV LOC AIRPORT IDENT", "", true);
             // Fuel
             CreateDataDefinition("FUEL TOTAL QUANTITY WEIGHT", "pounds");
             // Action
@@ -215,35 +245,34 @@ namespace Bombatlon
 
                 foreach (EVENTS entry in Enum.GetValues(typeof(EVENTS)))
                 {
-                    /*
+                    
                     if(Array.IndexOf(SystemEvents, entry) >= 0)
                     {
-                        Console.WriteLine($"sys: {entry}");
+                        //Console.WriteLine($"sys: {entry}");
                         simconnect.SubscribeToSystemEvent(entry, entry.ToString());
-                        simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, entry, false);
                     }
                     else 
                     {
-                        Console.WriteLine($"client: {entry}");
+                        //Console.WriteLine($"client: {entry}");
                         simconnect.MapClientEventToSimEvent(entry, entry.ToString());
                         simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, entry, false);
                     }
-                    */
+                    
 
                 }
 
                 // set Group Priority
-                //simconnect.SetNotificationGroupPriority(GROUP_ID.GROUP_A, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST);
+                simconnect.SetNotificationGroupPriority(GROUP_ID.GROUP_A, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST);
 
                 Console.WriteLine("Connected");
-                isSimConnectConnected = true;
+                IsSimConnectConnected = true;
                 return simconnect;
             }
             catch (COMException ex)
             {
                 Console.WriteLine("Unable to connect, Check if MSFS is running!");
                 simconnect = null;
-                isSimConnectConnected = false;
+                IsSimConnectConnected = false;
                 return null;
             }
         }
@@ -269,24 +298,6 @@ namespace Bombatlon
         {
             EVENTS ReceivedEvent = (EVENTS)recEvent.uEventID;
             Console.WriteLine(ReceivedEvent);
-
-            switch (ReceivedEvent)
-            {
-                case EVENTS.SimStart:
-                    {
-                        Console.WriteLine("Sim started");
-                        break;
-                    }
-                case EVENTS.SimStop:
-                    {
-                        Console.WriteLine("Sim stopped");
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
 
             OnEvent(ReceivedEvent);
         }
@@ -331,11 +342,17 @@ namespace Bombatlon
                             Title = result.sValue;
                             break;
                         }
+                    case "NAV_LOC_AIRPORT_IDENT":
+                        {
+                            Console.WriteLine(result.sValue);
+                            Airport = result.sValue;
+                            break;
+                        }
                 }
             }
             else
             {
-                // Console.WriteLine("SimConnect " + def.dname + " value: " + data.dwData[0]);
+                //Console.WriteLine("SimConnect " + def.dname + " value: " + data.dwData[0]);
                 switch (def.dname)
                 {
                     case "PLANE ALTITUDE":
@@ -380,40 +397,27 @@ namespace Bombatlon
                         }
                     case "ON ANY RUNWAY":
                         {
-                            isOnRundway = (double)data.dwData[0] > 0;
+                            IsOnRundway = (double)data.dwData[0] > 0;
                             break;
                         }
-                    case "GEAR IS ON GROUND":
+                    case "SIM ON GROUND":
                         {
-                            isOnGround = (double)data.dwData[0] > 0;
+                            IsOnGround = (double)data.dwData[0] > 0;
                             break;
                         }
                     case "ENG COMBUSTION":
                         {
-                            isEngineOn = (double)data.dwData[0] > 0;
+                            IsEngineOn = (double)data.dwData[0] > 0;
                             break;
                         }
                     case "SIM DISABLED":
                         {
-                            simDisabled = (double)data.dwData[0] > 0;
+                            SimDisabled = (double)data.dwData[0] > 0;
                             break;
                         }
                     case "BRAKE PARKING POSITION":
                         {
-                            isParkingBreak = (double)data.dwData[0] > 0;
-                            break;
-                        }
-                    case "SMOKE ENABLE":
-                        {
-
-                            if ((double)data.dwData[0] > 0)
-                            {
-                                Console.WriteLine("SMOKE");
-                                setValue(def.dname, 0.0);
-
-                                setValue("PAYLOAD STATION WEIGHT:6", 0.0);
-                                setValue("PAYLOAD STATION WEIGHT:5", 0.0);
-                            }
+                            IsParkingBreak = (double)data.dwData[0] > 0;
                             break;
                         }
                     case "PAYLOAD STATION COUNT":
@@ -429,6 +433,16 @@ namespace Bombatlon
                     case "FUEL TOTAL QUANTITY":
                         {
                             Fuel = (double)data.dwData[0];
+                            break;
+                        }
+                    case "REALISM CRASH DETECTION":
+                        {
+                            CrashEnabled = (double)data.dwData[0] > 0;
+                            break;
+                        }
+                    case "IS SLEW ACTIVE":
+                        {
+                            IsSlew = (double)data.dwData[0] > 0;
                             break;
                         }
                     default:

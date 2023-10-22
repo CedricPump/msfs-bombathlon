@@ -82,11 +82,18 @@ namespace Bombatlon
                 {
                     case EVENTS.SimStart:
                         {
+                           
                             this.callBack(new PlaneEvent
                             {
-                                Event = EVENTS.SimStart.ToString(),
-                                Parameter = new object[0]
+                                Event = "START",
+                                Parameter = new InitFlightData
+                                {
+                                    Ident = this.GetIdent(),
+                                    State = this.GetState(),
+                                    Telemetrie = this.GetTelemetrie()
+                                }
                             });
+                            
                             break;
                         }
                     case EVENTS.SimStop:

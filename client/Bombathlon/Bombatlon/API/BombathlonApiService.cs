@@ -249,7 +249,7 @@ namespace Bombatlon
                 Console.WriteLine("Unable to send flight data without a valid session token.");
                 return false;
             }
-
+            Console.WriteLine(data);
             SendMessageWS(data);
 
             return false;

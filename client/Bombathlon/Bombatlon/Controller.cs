@@ -30,25 +30,28 @@ namespace Bombatlon
                 try
                 {
                     plane.Update();
-                    if (plane.isSimConnectConnected && !plane.simDisabled)
+                    if (plane.IsSimConnectConnected && !plane.SimDisabled)
                     {
                         // Console.WriteLine(JsonSerializer.Serialize(plane));
                         if ((DateTime.Now - lastSent) > dataSendIntervall)
                         {
-                            PlaneEvent evt = new PlaneEvent
+                            if ((!plane.IsOnGround || plane.GroundSpeed > 0.05) && !plane.SimDisabled)
                             {
-                                Event = "TELEMETRIE",
-                                Parameter = plane.GetTelemetrie()
-                            };
-                                this.plane.SetBombs(new Dictionary<int, Bomb> { {5, new Bomb{
+                                PlaneEvent evt = new PlaneEvent
+                                {
+                                    Event = "TELEMETRIE",
+                                    Parameter = plane.GetTelemetrie()
+                                };
+                                this.plane.SetBombs(new Dictionary<int, Bomb> { {2, new Bomb{
                                     count = 0, Name = "Dummy", weight = 375
                                 } },
-                                {6, new Bomb{
+                                {3, new Bomb{
                                     count = 0, Name = "Dummy", weight = 375
                                 } }});
-                                            
-                            OnPlaneEventCallback(evt);
-                            lastSent = DateTime.Now;
+
+                                OnPlaneEventCallback(evt);
+                                lastSent = DateTime.Now;
+                            }
                         }
                     }
                 }
@@ -56,7 +59,7 @@ namespace Bombatlon
                 {
                     Console.WriteLine(ex.ToString());
                 }
-                int intervall = this.plane.isSimConnectConnected ? this.refreshIntervall : this.idlerefreshIntervall;
+                int intervall = this.plane.IsSimConnectConnected ? this.refreshIntervall : this.idlerefreshIntervall;
                 System.Threading.Thread.Sleep(intervall);
             };
         }
