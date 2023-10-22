@@ -11,10 +11,10 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import routes from './routes';
 import http, {IncomingMessage} from 'http';
 import {AuthService} from "./services/authServices";
-import WebSocket from 'ws';
-import internal from "stream";
 import expressWs from "express-ws";
 import {FlightService} from "./services/flightService";
+import WebSocket from "ws";
+import {MSFSClientService} from "./services/MSFSClientService";
 
 
 
@@ -32,32 +32,9 @@ app.use(cors());
 console.log(`init http server ${PORT}`);
 const httpServer = http.createServer(app);
 
-const { app: wsApp, getWss } = expressWs(app);
 
-console.log(`init WebSocket server /ws`);
-// WebSocket route
-wsApp.ws('/ws', (ws, req ) => {
 
-    console.log('WebSocket connection incoming');
-    // Extract token from the request headers or cookies
-    const token = req.headers['authorization']?.split(' ')[1];
 
-    // Perform authentication based on the token
-    if ((token == "")) {
-        ws.terminate(); // Terminate connection if authentication fails
-        return;
-    }
-    console.log('WebSocket connection established');
-    ws.on('message', (message) => {
-        console.log('Received message:', message);
-        // Handle the WebSocket message
-        FlightService.OnClientEventHandle(JSON.parse(message.toString()))
-    });
-
-    ws.on('close', () => {
-        console.log('WebSocket connection closed');
-    });
-});
 
 console.log(`init Apollo server /`);
 // Same ApolloServer initialization as before, plus the drain plugin
@@ -106,6 +83,44 @@ function requestLogger(req: express.Request, res: express.Response, next: expres
 app.use(errorHandler);
 app.use(requestLogger);
 app.use(AuthService.authMiddleware);
+
+
+console.log(`init WebSocket server /ws`);
+const { app: wsApp, getWss } = expressWs(app);
+// WebSocket route
+wsApp.ws('/ws', (ws: WebSocket, req: CustomRequest ) => {
+
+    console.log('WebSocket connection incoming');
+    // Extract token from the request headers or cookies
+    const token = req.headers['authorization']?.split(' ')[1];
+
+    // Perform authentication based on the token
+    if ((token == "")) {
+        ws.terminate(); // Terminate connection if authentication fails
+        return;
+    }
+    if(req.user?.userId == undefined) {
+        console.log('WebSocket request not containing user');
+        ws.close();
+        return;
+    }
+    else
+    {
+        MSFSClientService.AddClient(req.user?.userId, ws);
+    }
+    console.log('WebSocket connection established');
+
+    ws.on('message', (message) => {
+        console.log('Received message:', message);
+        // Handle the WebSocket message
+        FlightService.OnClientEventHandle(req.user?.userId ?? "", JSON.parse(message.toString()))
+    });
+
+    ws.on('close', () => {
+        MSFSClientService.RemoveClient(req.user?.userId ?? "");
+        console.log('WebSocket connection closed');
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

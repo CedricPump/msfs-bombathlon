@@ -5,11 +5,12 @@ class PlaneType {
     public atcType :string = "";
     public atcModel :string = "";
     public title :string = "";
+    public titleRegex: string = "";
     public maxFuel : number = 0.0;
     public year: number = 1903;
     public pylons: Map<number,Pylon> = new Map<number,Pylon>();
     constructor() {
-        // You can add more logic here if needed
+
     }
 }
 

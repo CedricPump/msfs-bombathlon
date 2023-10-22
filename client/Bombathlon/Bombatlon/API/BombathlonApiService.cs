@@ -210,9 +210,10 @@ namespace Bombatlon
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    Console.WriteLine($"Received message: {receivedMessage}");
+                    //Console.WriteLine($"Received message: {receivedMessage}");
                     try
                     {
+                        Console.WriteLine($"WS: {receivedMessage}");
                         Command cmd = JsonSerializer.Deserialize<Command>(receivedMessage);
                         this.callBack(cmd);
                     } 

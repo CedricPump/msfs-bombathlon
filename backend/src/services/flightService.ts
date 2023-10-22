@@ -1,12 +1,13 @@
 import { Flight, Position } from "../models/Flight";
 import { Plane } from "../models/Plane";
+import {MSFSClientService} from "./MSFSClientService";
 
 class FlightService {
     private static flights: Map<string, Flight> = new Map<string, Flight>();
 
     public static processFlightData(userId: string, data: any) {
         if (!FlightService.flights.has(userId)) {
-
+            this.InitFlight(userId, data)
         }
 
         const flight: Flight | undefined = FlightService.flights.get(userId);
@@ -44,13 +45,16 @@ class FlightService {
     }
 
     public static InitFlight(userId: string, data: any) {
+
+
         var plane = new Plane()
         plane.atcType = "";
         FlightService.flights.set(userId, new Flight(userId, new Plane()));
     }
 
-    public static OnClientEventHandle(event: PlaneEvent){
-
+    public static OnClientEventHandle(userId: string, event: PlaneEvent){
+        console.log(`OnClientEventHandle ${event.Event} ${event.Parameter}`);
+        MSFSClientService.Send(userId,"AKN");
     }
 }
 
