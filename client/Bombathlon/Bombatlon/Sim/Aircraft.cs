@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using Bombatlon.Model;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace Bombatlon
 {
-    class Aircraft
+    abstract class Aircraft
     {
         public bool isInit = false;
         private SimConnect simconnect;
@@ -16,8 +14,6 @@ namespace Bombatlon
         public const int WM_USER_SIMCONNECT = 0x0402;
         private Dictionary<DATA_DEFINE_ID, DataDefinition> definitions = new Dictionary<DATA_DEFINE_ID, DataDefinition>();
         private Dictionary<string, DataDefinition> definitions_by_string = new Dictionary<string, DataDefinition>();
-
-        private EVENTS bombReleaseEvent = EVENTS.SMOKE_TOGGLE;
 
         public double PayloadCount { get; private set; }
         public double[] PayloadWeight { get; private set; } = new double[16];
@@ -40,7 +36,7 @@ namespace Bombatlon
         public bool isSimConnectConnected { get; private set; } = false;
         public bool simDisabled { get; private set; } = true;
 
-        private Dictionary<int, Bomb> bombs = new Dictionary<int, Bomb>();
+
 
 
         public string toString()
@@ -53,17 +49,31 @@ namespace Bombatlon
             GROUP_A,
         };
 
-        enum EVENTS
+        public enum EVENTS
         {
-            SIMSTART,
-            SIMSTOP,
+            SimStart,               // SimStart
+            SimStop,                // SimStop
+            Crashed,                // Crashed
+            AircraftLoaded,         // AircraftLoaded
             LANDING_LIGHTS_TOGGLE,
             PARKING_BRAKES,
             PARKING_BRAKE_SET,
             SMOKE_OFF,
             SMOKE_ON,
             SMOKE_SET,
-            SMOKE_TOGGLE
+            SMOKE_TOGGLE,
+            TOW_PLANE_RELEASE,
+            HORN_TRIGGER,
+            PAUSE_TOGGLE,
+            PAUSE_ON,
+            PAUSE_OFF
+        };
+
+        public static EVENTS[] SystemEvents = new EVENTS[] {
+            EVENTS.SimStart,
+            EVENTS.SimStop,
+            EVENTS.Crashed,
+            EVENTS.AircraftLoaded,
         };
 
 
@@ -71,6 +81,31 @@ namespace Bombatlon
         {
             isSimConnectConnected = false;
             ConnectSimConnect();
+        }
+
+        public Telemetrie GetTelemetrie()
+        {
+            return new Telemetrie
+            {
+                Latitude = Latitude,
+                Longitude = Longitude,
+                Altitude = Altitude,
+                GroundSpeed = GroundSpeed,
+                Heading = Heading,
+                vX = vX,
+                vY = vY,
+                vZ = vZ
+            };
+        }
+
+        public Ident GetIdent()
+        {
+            return new Ident
+            {
+                Model = Model,
+                Title = Title,
+                Type = Type,
+            };
         }
 
         private void InitSimConnect(SimConnect sender, SIMCONNECT_RECV_OPEN data)
@@ -177,26 +212,28 @@ namespace Bombatlon
                 simconnect.OnRecvException += new SimConnect.RecvExceptionEventHandler(OnRecvException);
                 simconnect.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(OnRecvSimobjectDataBytype);
                 simconnect.OnRecvEvent += new SimConnect.RecvEventEventHandler(simconnect_OnRecvEvent);
-                simconnect.SubscribeToSystemEvent(EVENTS.SIMSTOP, "SimStop");
 
-                simconnect.MapClientEventToSimEvent(EVENTS.PARKING_BRAKE_SET, "PARKING_BRAKE_SET");
-                simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, EVENTS.PARKING_BRAKE_SET, false);
+                foreach (EVENTS entry in Enum.GetValues(typeof(EVENTS)))
+                {
+                    /*
+                    if(Array.IndexOf(SystemEvents, entry) >= 0)
+                    {
+                        Console.WriteLine($"sys: {entry}");
+                        simconnect.SubscribeToSystemEvent(entry, entry.ToString());
+                        simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, entry, false);
+                    }
+                    else 
+                    {
+                        Console.WriteLine($"client: {entry}");
+                        simconnect.MapClientEventToSimEvent(entry, entry.ToString());
+                        simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, entry, false);
+                    }
+                    */
 
-                simconnect.MapClientEventToSimEvent(EVENTS.PARKING_BRAKES, "PARKING_BRAKES");
-                simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, EVENTS.PARKING_BRAKES, false);
+                }
 
-                simconnect.MapClientEventToSimEvent(EVENTS.SMOKE_ON, "SMOKE_ON");
-                simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, EVENTS.SMOKE_ON, false);
-
-                simconnect.MapClientEventToSimEvent(EVENTS.SMOKE_OFF, "SMOKE_OFF");
-                simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, EVENTS.SMOKE_OFF, false);
-
-                simconnect.MapClientEventToSimEvent(EVENTS.SMOKE_SET, "SMOKE_SET");
-                simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, EVENTS.SMOKE_SET, false);
-
-                simconnect.MapClientEventToSimEvent(EVENTS.SMOKE_TOGGLE, "SMOKE_TOGGLE");
-                simconnect.AddClientEventToNotificationGroup(GROUP_ID.GROUP_A, EVENTS.SMOKE_TOGGLE, false);
-                simconnect.SetNotificationGroupPriority(GROUP_ID.GROUP_A, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST);
+                // set Group Priority
+                //simconnect.SetNotificationGroupPriority(GROUP_ID.GROUP_A, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST);
 
                 Console.WriteLine("Connected");
                 isSimConnectConnected = true;
@@ -228,34 +265,19 @@ namespace Bombatlon
             }
         }
 
-        public void AddBombs(Dictionary<int, Bomb> bombs)
-        {
-            foreach (int key in bombs.Keys)
-            {
-                var station = "PAYLOAD STATION WEIGHT:" + key;
-                setValue(station, bombs[key].weight);
-            }
-            this.bombs = bombs;
-        }
-
         void simconnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT recEvent)
         {
-            var ReceivedEvent = (EVENTS)recEvent.uEventID;
+            EVENTS ReceivedEvent = (EVENTS)recEvent.uEventID;
             Console.WriteLine(ReceivedEvent);
-
-            if(ReceivedEvent == bombReleaseEvent)
-            {
-                dropBomb();
-            }
 
             switch (ReceivedEvent)
             {
-                case EVENTS.SIMSTART:
+                case EVENTS.SimStart:
                     {
-                        Console.WriteLine("Sim running");
+                        Console.WriteLine("Sim started");
                         break;
                     }
-                case EVENTS.SIMSTOP:
+                case EVENTS.SimStop:
                     {
                         Console.WriteLine("Sim stopped");
                         break;
@@ -265,29 +287,13 @@ namespace Bombatlon
                         break;
                     }
             }
+
+            OnEvent(ReceivedEvent);
         }
 
-        void dropBomb()
-        {
-            if (bombs.Keys.Count > 0)
-            {
-                Console.WriteLine("Bomb Drop!");
-                Console.WriteLine(this.toString());
-                // todo Send Event
+        public abstract void OnEvent(EVENTS recEvent);
 
-                // remove Bomb
-                int key = this.bombs.Keys.First();
-                Bomb bomb = this.bombs[key];
-                string station = "PAYLOAD STATION WEIGHT:" + key;
-                setValue(station, 0);
-                this.bombs.Remove(key);
-                Console.WriteLine($"Dropping {bomb.Name} from {station}");
-            }
-            else
-            {
-                Console.WriteLine($"Out of Bombs");
-            }
-        }
+
 
         private void MyDispatchProcA(SIMCONNECT_RECV pData, uint cData)
         {
@@ -440,7 +446,7 @@ namespace Bombatlon
 
         private void OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            simconnect.UnsubscribeFromSystemEvent(EVENTS.SIMSTOP);
+            simconnect.UnsubscribeFromSystemEvent(EVENTS.SimStop);
             Console.WriteLine("SimConnect quit");
         }
 

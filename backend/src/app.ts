@@ -14,6 +14,7 @@ import {AuthService} from "./services/authServices";
 import WebSocket from 'ws';
 import internal from "stream";
 import expressWs from "express-ws";
+import {FlightService} from "./services/flightService";
 
 
 
@@ -49,8 +50,8 @@ wsApp.ws('/ws', (ws, req ) => {
     console.log('WebSocket connection established');
     ws.on('message', (message) => {
         console.log('Received message:', message);
-        ws.send(message)
         // Handle the WebSocket message
+        FlightService.OnClientEventHandle(JSON.parse(message.toString()))
     });
 
     ws.on('close', () => {

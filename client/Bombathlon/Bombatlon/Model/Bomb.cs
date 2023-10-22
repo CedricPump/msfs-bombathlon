@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bombatlon
 {
-    internal class Bomb
+    public class Bomb
     {
         public string Name { get; set; } = "";
         public int weight { get; set; } = 0;

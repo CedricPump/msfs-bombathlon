@@ -44,6 +44,10 @@ class FlightService {
 
         // You can add more logic here if needed
     }
+
+    public static OnClientEventHandle(event: PlaneEvent){
+
+    }
 }
 
 export { FlightService };

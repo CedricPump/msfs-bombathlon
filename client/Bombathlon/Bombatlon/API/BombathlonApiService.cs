@@ -22,9 +22,12 @@ namespace Bombatlon
         private string refreshToken = "";
         private string credentialsFilePath = "./credentials.txt";
         private ClientWebSocket webSocket;
+        public delegate void CommandReveivedCallBack(Command command);
+        private CommandReveivedCallBack callBack = null;
 
-        public BombathlonApiService()
+        public BombathlonApiService(CommandReveivedCallBack callBack)
         {
+            this.callBack = callBack;
             this.baseUrl = $"http://{host}:{port}/api";
             this.WebSocketUrl = $"ws://{host}:{port}/ws";
 
@@ -50,11 +53,6 @@ namespace Bombatlon
 
                     // Start a separate thread to receive messages
                     var receiveTask = ReceiveWS();
-
-                    // Send a message
-                    string message = $"Connect {token.userUUID}";
-                    await this.SendMessageWS(message);
-
                     Console.WriteLine($"connected WS");
 
                     // Wait for the receive task to complete
@@ -185,24 +183,21 @@ namespace Bombatlon
                     httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.accessToken}");
                     var content = new StringContent(message, Encoding.UTF8, "application/json");
 
-                    //Todo add userId
-
                     var response = await httpClient.PostAsync($"{baseUrl}/flight/data", content);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        Console.WriteLine("Flight data sent successfully.");
                         return;
                     }
                     else
                     {
-                        Console.WriteLine("Failed to send flight data. Status code: " + response.StatusCode);
+                        Console.WriteLine("Failed to send data. Status code: " + response.StatusCode);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error sending flight data: " + ex.Message);
+                Console.WriteLine("Error sending data: " + ex.Message);
             }
         }
 
@@ -216,6 +211,15 @@ namespace Bombatlon
                 {
                     string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
                     Console.WriteLine($"Received message: {receivedMessage}");
+                    try
+                    {
+                        Command cmd = JsonSerializer.Deserialize<Command>(receivedMessage);
+                        this.callBack(cmd);
+                    } 
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Could not parse command: {receivedMessage}");
+                    }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -226,7 +230,7 @@ namespace Bombatlon
         }
 
 
-        public async Task<bool> sendFlightData(Aircraft aircraft)
+        public async Task<bool> sendData(string data)
         {
             try
             {
@@ -246,8 +250,7 @@ namespace Bombatlon
                 return false;
             }
 
-            string flightData = JsonSerializer.Serialize(aircraft);
-            SendMessageWS(flightData);
+            SendMessageWS(data);
 
             return false;
         }
