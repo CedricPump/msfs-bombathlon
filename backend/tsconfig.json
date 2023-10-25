@@ -10,6 +10,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/schemas/*.json"],
+  "include": ["src/**/*.ts", "src/schemas/*.json", "src/models/data/aircraft.json"],
   "exclude": ["node_modules"]
 }

@@ -15,6 +15,7 @@ import expressWs from "express-ws";
 import {FlightService} from "./services/flightService";
 import WebSocket from "ws";
 import {MSFSClientService} from "./services/MSFSClientService";
+import {PlaneManager} from "./models/PlaneManager";
 
 
 
@@ -29,11 +30,10 @@ const PORT = process.env.PORT || 8000;
 app.use(express.json());
 app.use(cors());
 
+PlaneManager.getInstance();
+
 console.log(`init http server ${PORT}`);
 const httpServer = http.createServer(app);
-
-
-
 
 
 console.log(`init Apollo server /`);

@@ -214,7 +214,8 @@ namespace Bombatlon
                     try
                     {
                         Console.WriteLine($"WS: {receivedMessage}");
-                        Command cmd = JsonSerializer.Deserialize<Command>(receivedMessage);
+                        Command cmd = JsonSerializer.Deserialize<Command>(receivedMessage.Trim());
+                        Console.WriteLine($"WS: {cmd.Type} {cmd.Parameters}");
                         this.callBack(cmd);
                     } 
                     catch (Exception e)

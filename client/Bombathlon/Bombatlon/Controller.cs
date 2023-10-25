@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bombatlon.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,19 +36,13 @@ namespace Bombatlon
                         // Console.WriteLine(JsonSerializer.Serialize(plane));
                         if ((DateTime.Now - lastSent) > dataSendIntervall)
                         {
-                            if ((!plane.IsOnGround || plane.GroundSpeed > 0.05) && !plane.SimDisabled)
+                            if ( true ) //(!plane.IsOnGround || plane.GroundSpeed > 0.05) && !plane.SimDisabled)
                             {
                                 PlaneEvent evt = new PlaneEvent
                                 {
                                     Event = "TELEMETRIE",
                                     Parameter = plane.GetTelemetrie()
                                 };
-                                this.plane.SetBombs(new Dictionary<int, Bomb> { {2, new Bomb{
-                                    count = 0, Name = "Dummy", weight = 375
-                                } },
-                                {3, new Bomb{
-                                    count = 0, Name = "Dummy", weight = 375
-                                } }});
 
                                 OnPlaneEventCallback(evt);
                                 lastSent = DateTime.Now;
@@ -66,12 +61,34 @@ namespace Bombatlon
 
         public void OnCommandCallback(Command command)
         {
-            switch (command.command)
+            Console.WriteLine($"OnCommandCallback: {command.Type}");
+            switch (command.Type)
             {
-                case "SETBOMBS":
+                case "REQUEST_INIT":
                     {
-                        Dictionary<int, Bomb> bombs = JsonSerializer.Deserialize<Dictionary<int, Bomb>>(command.parameters[0]);
+                        PlaneEvent evt = new PlaneEvent
+                        {
+                            Event = "INIT_FLIGHT",
+                            Parameter = new InitFlightData
+                            {
+                                Telemetrie = this.plane.GetTelemetrie(),
+                                Ident = this.plane.GetIdent(),
+                                State = this.plane.GetState(),
+                            },
+                        };
+                        OnPlaneEventCallback(evt);
+                        break;
+                    }
+                case "SET_BOMBS":
+                    {
+                        Console.WriteLine(command.Parameters);
+                        Dictionary<int, Bomb> bombs = JsonSerializer.Deserialize<Dictionary<int, Bomb>>(command.Parameters);
                         plane.SetBombs(bombs);
+                        break;
+                    }
+                case "ERROR":
+                    {
+                        Console.Error.WriteLine($"{command.Type} {command.Parameters}");
                         break;
                     }
                 case "AKN":
@@ -80,7 +97,7 @@ namespace Bombatlon
                     }
                 default:
                     {
-                        Console.WriteLine(command.command);
+                        Console.WriteLine(command.Type);
                         break;
                     }
             }
