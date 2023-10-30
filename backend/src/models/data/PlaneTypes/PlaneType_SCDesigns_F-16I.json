@@ -1,0 +1,47 @@
+{
+  "DisplayName": "F-16I Fighting Falcon",
+  "AircrafName": "F-16I",
+  "Manufaturer": "Lockheed Martin",
+  "Developer": "SC Designs",
+  "ATCModel": "Falcon",
+  "ATCType": "F16",
+  "Title": "SC Designs F16I Fighting Falcon Israel",
+  "TitleRegex": "SC Designs F16I Fighting Falcon.*",
+  "maxFuel": 1144.7999267578125,
+  "PylonsCount": 10,
+  "Year": 1978,
+  "Pylons": [
+    {
+      "payloadIndex": 5,
+      "payloadName": "AGM-88 HARM (375lbs/170kg)",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU-32",
+          "number": 1,
+          "weight": 375
+        }
+      ]
+    },
+    {
+      "payloadIndex": 6,
+      "payloadName": "AGM-88 HARM (375lbs/170kg)",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU-32",
+          "number": 1,
+          "weight": 375
+        }
+      ]
+    },
+    {
+      "payloadIndex": 9,
+      "payloadName": "AN/ALQ131 (350lbs/160kg)",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 10,
+      "payloadName": "AN/ASQ213 (350lbs/160kg)",
+      "loadouts": []
+    }
+  ]
+}

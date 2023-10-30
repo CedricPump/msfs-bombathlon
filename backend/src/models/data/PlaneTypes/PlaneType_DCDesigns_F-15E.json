@@ -1,0 +1,79 @@
+{
+  "DisplayName": "DCD_F-15E_Strike_Eagle_336th_FS",
+  "AircrafName": "DCD_F-15E_Strike_Eagle_336th_FS",
+  "Manufaturer": "McDonnell Douglas",
+  "Developer": "DC Designs",
+  "ATCModel": "F15E",
+  "ATCType": "Eagle",
+  "Title": "DCD_F-15E_Strike_Eagle_336th_FS",
+  "TitleRegex": "DCD_F-15E_Strike_Eagle_.*",
+  "maxFuel": 5255,
+  "PylonsCount": 13,
+  "Pylons": [
+    {
+      "payloadIndex": 7,
+      "payloadName": "ATFLIR 430lbs",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 8,
+      "payloadName": "SNIPER 910lbs",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 9,
+      "payloadName": "GBU12L 2010lbs",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU12 Paveway II",
+          "number": 2,
+          "weight": 2010
+        }
+      ]
+    },
+    {
+      "payloadIndex": 10,
+      "payloadName": "GBU12R 2010lbs",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU12 Paveway II",
+          "number": 2,
+          "weight": 2010
+        }
+      ]
+    },
+    {
+      "payloadIndex": 11,
+      "payloadName": "GBU38L 2010lbs",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU-38",
+          "number": 3,
+          "weight": 2010
+        }
+      ]
+    },
+    {
+      "payloadIndex": 12,
+      "payloadName": "GBU38R 2010lbs",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU-38",
+          "number": 3,
+          "weight": 2010
+        }
+      ]
+    },
+    {
+      "payloadIndex": 13,
+      "payloadName": "JDAM 2010lbs",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU-31",
+          "number": 1,
+          "weight": 2010
+        }
+      ]
+    }
+  ]
+}

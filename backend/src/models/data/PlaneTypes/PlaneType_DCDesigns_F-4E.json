@@ -1,0 +1,47 @@
+{
+  "DisplayName": "F-4E Phantom",
+  "AircrafName": "F-4E",
+  "Manufaturer": "McDonnell",
+  "Developer": "DC Designs",
+  "ATCModel": "F4",
+  "ATCType": "Phantom",
+  "Title": "TEST DC Designs F-4E Phantom Turkish Air Force",
+  "TitleRegex": "DC Designs F-4E Phantom .*",
+  "maxFuel": 1659.1500244140625,
+  "PylonsCount": 10,
+  "Year": 1965,
+  "Pylons": [
+    {
+      "payloadIndex": 4,
+      "payloadName": "AIM9 190lbs / GBU12 1000lbs / GBU38 1500lbs",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU12 Paveway II",
+          "number": 2,
+          "weight": 1000
+        },
+        {
+          "BombTypeId": "GBU-38",
+          "number": 3,
+          "weight": 1500
+        }
+      ]
+    },
+    {
+      "payloadIndex": 6,
+      "payloadName": "AIM9 190lbs / GBU12 1000lbs / GBU38 1500lbs",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU12 Paveway II",
+          "number": 2,
+          "weight": 1000
+        },
+        {
+          "BombTypeId": "GBU-38",
+          "number": 3,
+          "weight": 1500
+        }
+      ]
+    }
+  ]
+}

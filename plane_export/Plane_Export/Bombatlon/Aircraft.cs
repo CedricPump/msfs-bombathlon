@@ -22,6 +22,7 @@ namespace PlaneExport
         public double Fuel { get; private set; }
         public double payloadCount { get; private set; }
         public string[] payloadNames { get; private set; } = new string[15];
+        public double[] payloadWeights { get; private set; } = new double[15];
         public bool isSimConnectConnected { get; private set; } = false;
         public bool simDisabled { get; private set; } = true;
 
@@ -246,7 +247,85 @@ namespace PlaneExport
                         {
                             payloadNames[14] = result.sValue;
                             break;
-                        }   
+                        }
+
+                    case "PAYLOAD STATION WEIGHT:1":
+                        {
+                            payloadWeights[0] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:2":
+                        {
+                            payloadWeights[1] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:3":
+                        {
+                            payloadWeights[2] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:4":
+                        {
+                            payloadWeights[3] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:5":
+                        {
+                            payloadWeights[4] = double.Parse(result.sValue);
+                            break;
+                        }
+
+                    case "PAYLOAD STATION WEIGHT:6":
+                        {
+                            payloadWeights[5] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:7":
+                        {
+                            payloadWeights[6] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:8":
+                        {
+                            payloadWeights[7] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:9":
+                        {
+                            payloadWeights[8] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:10":
+                        {
+                            payloadWeights[9] = double.Parse(result.sValue);
+                            break;
+                        }
+
+                    case "PAYLOAD STATION WEIGHT:11":
+                        {
+                            payloadWeights[10] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:12":
+                        {
+                            payloadWeights[11] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:13":
+                        {
+                            payloadWeights[12] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:14":
+                        {
+                            payloadWeights[13] = double.Parse(result.sValue);
+                            break;
+                        }
+                    case "PAYLOAD STATION WEIGHT:15":
+                        {
+                            payloadWeights[14] = double.Parse(result.sValue);
+                            break;
+                        }
                 }
             }
             else

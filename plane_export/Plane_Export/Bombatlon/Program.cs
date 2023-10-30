@@ -8,8 +8,6 @@ using System.IO;
 
 namespace PlaneExport
 {
-
-
     class Program
     {
         static void Main(string[] args)
@@ -41,18 +39,19 @@ namespace PlaneExport
                             for (int i = 0; i < entry.PylonsCount; i++)
                             {
                                 entry.Pylons[i] = new Pylon();
+                                entry.Pylons[i].payloadWeight = aircraft.payloadWeights[i];
                                 entry.Pylons[i].payloadIndex = (uint) i+1;
                                 entry.Pylons[i].payloadName = aircraft.payloadNames[i];
                             }
                             string jsonEntry = JsonSerializer.Serialize(entry, new JsonSerializerOptions
                             {
                                 WriteIndented = true,
-                            }) + ",";
+                            });
 
                             Console.WriteLine(jsonEntry);
 
                             // Append the JSON entry to the log file
-                            File.AppendAllText(logFilePath, jsonEntry + Environment.NewLine);
+                            File.AppendAllText($".\\PlaneTypes\\PlaneType_{aircraft.Title}.json", jsonEntry + Environment.NewLine);
 
 
                         }
@@ -69,10 +68,8 @@ namespace PlaneExport
                     Console.WriteLine(ex.ToString());
                     System.Threading.Thread.Sleep(5000);
                 }
-                
             };
         }
-
     }
 
     class AircraftEntry
@@ -90,20 +87,14 @@ namespace PlaneExport
         public Pylon[] Pylons { get; set; } = new Pylon[0];
     }
 
-
     class Pylon
     {
         public uint payloadIndex { get; set; }
+
+        public double payloadWeight { get; set; } = 0.0;
         public string payloadName { get; set; } = "";
         public string[] loadouts { get; set; } = new string[0];
     }
-    
-
-
-
-
-
-
 }
 
 

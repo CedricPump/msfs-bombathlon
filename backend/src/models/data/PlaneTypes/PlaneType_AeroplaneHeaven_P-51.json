@@ -1,0 +1,37 @@
+{
+  "DisplayName": "P-51D Mustang",
+  "AircrafName": "P-51D",
+  "Manufaturer": "North American Aviation",
+  "Developer": "Aeroplane Heaven",
+  "ATCModel": "P-51D",
+  "ATCType": "North American",
+  "Title": "North American P-51D 487th 352 group",
+  "TitleRegex": "North American P-51D .*",
+  "maxFuel": 208.25244140625,
+  "PylonsCount": 3,
+  "Year": 1942,
+  "Pylons": [
+    {
+      "payloadIndex": 2,
+      "payloadName": "Left 500 lb bomb",
+      "loadouts": [
+        {
+          "BombTypeId": "AN-M64A1",
+          "number": 1,
+          "weight": 500
+        }
+      ]
+    },
+    {
+      "payloadIndex": 3,
+      "payloadName": "Right 500 lb bomb",
+      "loadouts": [
+        {
+          "BombTypeId": "AN-M64A1",
+          "number": 1,
+          "weight": 500
+        }
+      ]
+    }
+  ]
+}

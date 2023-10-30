@@ -1,0 +1,41 @@
+{
+  "DisplayName": "F-117 Knighthawk",
+  "AircrafName": "F-117",
+  "Manufaturer": "Lockheed Martin",
+  "Developer": "Aerial Simulations",
+  "ATCModel": "F117",
+  "ATCType": "Fighter",
+  "Title": "F117 Knighthawk 84-827",
+  "TitleRegex": "F117 Knighthawk.*",
+  "maxFuel": 2789.9326171875,
+  "PylonsCount": 3,
+  "Pylons": [
+    {
+      "payloadIndex": 1,
+      "payloadName": "Pilot",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 2,
+      "payloadName": "Left Payload",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU-31",
+          "number": 1,
+          "weight": 2020
+        }
+      ]
+    },
+    {
+      "payloadIndex": 3,
+      "payloadName": "Right Payload",
+      "loadouts": [
+        {
+          "BombTypeId": "GBU-31",
+          "number": 1,
+          "weight": 2020
+        }
+      ]
+    }
+  ]
+}

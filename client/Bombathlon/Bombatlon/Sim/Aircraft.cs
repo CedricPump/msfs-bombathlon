@@ -138,6 +138,9 @@ namespace Bombatlon
 
         private void InitSimConnect(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
+            definitions = new Dictionary<DATA_DEFINE_ID, DataDefinition>();
+            definitions_by_string = new Dictionary<string, DataDefinition>();
+
             Console.WriteLine("open: init ...");
             // Identity
             CreateDataDefinition("ATC MODEL", "", true);
@@ -195,14 +198,24 @@ namespace Bombatlon
             CreateDataDefinition("PAYLOAD STATION WEIGHT:13", "lbs");
             CreateDataDefinition("PAYLOAD STATION WEIGHT:14", "lbs");
             CreateDataDefinition("PAYLOAD STATION WEIGHT:15", "lbs");
+
+            RegiserDefinitions();
+
             this.isInit = true;
             Console.WriteLine("init done");
+        }
+
+        private void RegiserDefinitions()
+        {
+            foreach (DataDefinition def in definitions.Values)
+            {
+                RegisterDataDefinition(def);
+            }
         }
 
         private DataDefinition CreateDataDefinition(string name, string unit = "", bool isString = false)
         {
             DataDefinition def = new DataDefinition(name, unit, isString);
-            RegisterDataDefinition(def);
             this.definitions.Add(def.defId, def);
             this.definitions_by_string.Add(name, def);
             return def;
@@ -304,7 +317,7 @@ namespace Bombatlon
 
         public abstract void OnEvent(EVENTS recEvent);
 
-
+        public abstract void OnQuit();
 
         private void MyDispatchProcA(SIMCONNECT_RECV pData, uint cData)
         {
@@ -460,8 +473,12 @@ namespace Bombatlon
 
         private void OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            simconnect.UnsubscribeFromSystemEvent(EVENTS.SimStop);
+            simconnect.Dispose();
+            simconnect = null;
+            IsSimConnectConnected = false;
+            SimDisabled = false;
             Console.WriteLine("SimConnect quit");
+            this.OnQuit();
         }
 
     }

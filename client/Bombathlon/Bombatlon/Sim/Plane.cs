@@ -112,6 +112,16 @@ namespace Bombatlon
                 }
             }
         }
+
+        public override void OnQuit()
+        {
+            this.callBack(new PlaneEvent
+            {
+                Event = "QUIT",
+                Parameter = new object[0]
+            });
+            //System.Environment.Exit(0);
+        }
     }
     
 }

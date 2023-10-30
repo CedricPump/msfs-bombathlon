@@ -1,0 +1,40 @@
+{
+  "DisplayName": " AV-8B Harrier II",
+  "AircrafName": "AV-8B",
+  "Manufaturer": "McDonnell Douglas",
+  "Developer": "DC Designs",
+  "ATCModel": "Harrier",
+  "ATCType": "AV8B",
+  "Title": "DC Designs AV-8B Harrier II VMA-211",
+  "TitleRegex": "DC Designs AV-8B Harrier II .*",
+  "maxFuel": 1685,
+  "PylonsCount": 7,
+  "Year": 1985,
+  "Pylons": [
+    {
+      "payloadIndex": 3,
+      "payloadName": "LIDS 105lbs Gun Pods 190lbs",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 4,
+      "payloadName": "AIM9 190lbs",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 5,
+      "payloadName": "AIM9 190lbs",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 6,
+      "payloadName": "Maverick 380lbs",
+      "loadouts": []
+    },
+    {
+      "payloadIndex": 7,
+      "payloadName": "Maverick 380lbs",
+      "loadouts": []
+    }
+  ]
+}
